@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a845b7b0eda446b70f01292ed17d3, type: 3}
+  m_Name: Category_Vegetables
+  m_EditorClassIdentifier: Assembly-CSharp::CategoryData
+  categoryId: vegetables
+  categoryName: Sebzeler
+  items:
+  - id: 
+    displayName: carrots
+    sprite: {fileID: 7214594815615664502, guid: ae2b481568263924eaff66af7de26f78, type: 3}
+    voice: {fileID: 8300000, guid: 6f55653a061b4cd41b94e4a699cf4e15, type: 3}
+  - id: 
+    displayName: tomatoes
+    sprite: {fileID: 5576387385352365916, guid: 356a20d9f57bf0f4fb8663edd16eb75c, type: 3}
+    voice: {fileID: 8300000, guid: 81dcbf64a1eac0d429280d6fa6d07578, type: 3}
+  - id: 
+    displayName: cucumbers
+    sprite: {fileID: 2344657876374765300, guid: ebf4b2d05ab181643a14949ed881d898, type: 3}
+    voice: {fileID: 8300000, guid: 32acc95941fbe274db1f69866e3deb94, type: 3}
+  - id: 
+    displayName: potatoes
+    sprite: {fileID: -594753259779395408, guid: a32624f921a79834ead41242df9b814d, type: 3}
+    voice: {fileID: 8300000, guid: ba1698e9a5d3e8a4092c7d4c9280331b, type: 3}
+  - id: 
+    displayName: broccoli
+    sprite: {fileID: -1059643248474004772, guid: 4d7d110a057310548ad0f051802720ee, type: 3}
+    voice: {fileID: 8300000, guid: 74c2eb4f442a470489704105e1b88189, type: 3}
+  - id: 
+    displayName: peppers
+    sprite: {fileID: 4271729092549702949, guid: 4c799fa14c21fef4a812f4d5c2f7f790, type: 3}
+    voice: {fileID: 8300000, guid: 2e7d907d74eeb4f4a97c5fa4ca2da851, type: 3}
+  - id: 
+    displayName: onions
+    sprite: {fileID: 8939869022785114783, guid: f1010a71eea5d1b43960a6c7964f168c, type: 3}
+    voice: {fileID: 8300000, guid: 8a523f5fbc5f5014dafc2ca66a7d256c, type: 3}

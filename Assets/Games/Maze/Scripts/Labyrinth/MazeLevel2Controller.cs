@@ -1,0 +1,526 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Video;
+using System.Collections;
+
+public class MazeLevel2Controller : MonoBehaviour
+{
+    [Header("UI")]
+    public GameObject levelCompletePanel;
+    public Button replayButton;
+    public Button nextButton;
+    public Button exitButton;
+    public Slider volumeSlider;
+
+    [Header("Scene Names")]
+    public string mainMenuSceneName = "MazeMainMenu";
+    public string nextLevelSceneName = "Maze_Level3";
+
+    [Header("Intro Voice (Before play)")]
+    public DraggableMazeItem draggableItem;
+    public AudioSource introSource;
+    public AudioClip introClip;
+    public float introExtraDelay = 0.05f;
+
+    [Header("Combine Animation")]
+    public Transform combineRoot;
+    public float moveDuration = 0.6f;
+    public float scaleMultiplier = 1.6f;
+
+    [Header("Tebrik Voice")]
+    public AudioSource voiceSource;
+    public AudioClip tebrikClip;
+    public float afterTebrikDelay = 1.2f;
+
+    [Header("Instruction Voice (Optional)")]
+    public AudioClip instructionClip;
+
+    [Header("Wall Hit")]
+    public AudioClip wallClip;
+    public Transform draggableStartPoint;
+    public float wrongLockSeconds = 0.15f;
+
+    [Header("Video Win Overlay")]
+    public GameObject videoOverlay;
+    public RectTransform videoContainer;
+    public VideoPlayer videoPlayer;
+    public Button videoContinueButton;
+
+    [Header("Video Pop Animation")]
+    public float videoPopDuration = 0.45f;
+    public float videoStartScale = 0.2f;
+    public float videoEndScale = 1f;
+
+    [Header("OTIGO API")]
+    public int activityId = 5;
+    public int levelPlayed = 2;
+    public int totalTargetCount = 1;
+    public int parentHelpCount = 0;
+
+    private const string VolumeKey = "Maze_GameVolume";
+
+    private bool finished = false;
+    private bool resultSent = false;
+    private bool inPenalty = false;
+    private bool gameplayStarted = false;
+
+    private int mistakesMade = 0;
+    private float activePlayTime = 0f;
+
+    private string StatePrefix
+    {
+        get { return "Maze_State_" + SceneManager.GetActiveScene().name + "_"; }
+    }
+
+    private void Start()
+    {
+        if (!MazeOtigoSessionTracker.HasSession())
+            MazeOtigoSessionTracker.BeginSession(activityId);
+
+        finished = false;
+        resultSent = false;
+        inPenalty = false;
+        gameplayStarted = false;
+
+        mistakesMade = 0;
+        parentHelpCount = 0;
+        activePlayTime = 0f;
+
+        if (draggableItem != null)
+        {
+            draggableItem.controller = this;
+            draggableItem.Lock();
+        }
+
+        if (levelCompletePanel != null)
+            levelCompletePanel.SetActive(false);
+
+        if (replayButton != null)
+        {
+            replayButton.gameObject.SetActive(false);
+            replayButton.onClick.RemoveAllListeners();
+            replayButton.onClick.AddListener(ReplayLevel);
+        }
+
+        if (nextButton != null)
+        {
+            nextButton.gameObject.SetActive(false);
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(NextLevel);
+        }
+
+        if (exitButton != null)
+        {
+            exitButton.gameObject.SetActive(true);
+            exitButton.onClick.RemoveAllListeners();
+            exitButton.onClick.AddListener(GoToMenu);
+        }
+
+        if (volumeSlider != null)
+        {
+            float saved = PlayerPrefs.GetFloat(VolumeKey, 1f);
+            AudioListener.volume = saved;
+            volumeSlider.value = saved;
+            volumeSlider.onValueChanged.RemoveAllListeners();
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
+
+        if (videoOverlay != null)
+            videoOverlay.SetActive(false);
+
+        if (videoContainer != null)
+            videoContainer.localScale = Vector3.one * videoStartScale;
+
+        if (videoPlayer != null)
+        {
+            videoPlayer.playOnAwake = false;
+            videoPlayer.isLooping = false;
+        }
+
+        if (videoContinueButton != null)
+        {
+            videoContinueButton.gameObject.SetActive(false);
+            videoContinueButton.onClick.RemoveAllListeners();
+            videoContinueButton.onClick.AddListener(OnVideoContinuePressed);
+        }
+
+        if (HasSavedState())
+        {
+            LoadState();
+
+            if (finished)
+                RestoreCompletedLevel();
+            else
+                RestorePlayingLevel();
+        }
+        else
+        {
+            StartCoroutine(PlayIntroAndUnlock());
+        }
+    }
+
+    private void Update()
+    {
+        bool parentModeActive =
+            ParentModeManager.Instance != null &&
+            ParentModeManager.Instance.IsParentModeActive;
+
+        if (gameplayStarted && !finished && !parentModeActive && !IsInstructionAudioPlaying())
+            activePlayTime += Time.deltaTime;
+    }
+
+    private bool IsInstructionAudioPlaying()
+    {
+        return (introSource != null && introSource.isPlaying) ||
+               (voiceSource != null && voiceSource.isPlaying);
+    }
+
+    public void OnVolumeChanged(float value)
+    {
+        AudioListener.volume = value;
+        PlayerPrefs.SetFloat(VolumeKey, value);
+        PlayerPrefs.Save();
+    }
+
+    private IEnumerator PlayIntroAndUnlock()
+    {
+        if (draggableItem != null)
+            draggableItem.Lock();
+
+        if (introSource != null && introClip != null)
+        {
+            introSource.PlayOneShot(introClip);
+            yield return new WaitForSeconds(introClip.length + introExtraDelay);
+        }
+
+        gameplayStarted = true;
+
+        if (draggableItem != null)
+            draggableItem.Unlock();
+    }
+
+    private void RestorePlayingLevel()
+    {
+        gameplayStarted = true;
+
+        if (draggableItem != null)
+            draggableItem.Unlock();
+    }
+
+    private void RestoreCompletedLevel()
+    {
+        gameplayStarted = false;
+
+        if (draggableItem != null)
+            draggableItem.Lock();
+
+        if (levelCompletePanel != null)
+            levelCompletePanel.SetActive(true);
+
+        if (replayButton != null)
+            replayButton.gameObject.SetActive(true);
+
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(true);
+    }
+
+    public void OnCombinedWin(Transform targetCone)
+    {
+        if (finished) return;
+
+        finished = true;
+        inPenalty = false;
+        gameplayStarted = false;
+
+        if (ParentModeManager.Instance != null && ParentModeManager.Instance.IsParentModeActive)
+            AddParentHelp();
+
+        if (draggableItem != null)
+            draggableItem.Lock();
+
+        combineRoot = targetCone;
+
+        if (replayButton != null) replayButton.gameObject.SetActive(true);
+        if (nextButton != null) nextButton.gameObject.SetActive(true);
+
+        SaveLevelResult();
+        SaveState();
+
+        StartCoroutine(FullWinSequence());
+    }
+
+    private IEnumerator FullWinSequence()
+    {
+        if (combineRoot != null)
+            yield return StartCoroutine(CombineMoveAndScale());
+
+        if (voiceSource != null && tebrikClip != null)
+            voiceSource.PlayOneShot(tebrikClip);
+
+        yield return new WaitForSeconds(afterTebrikDelay);
+
+        if (voiceSource != null && instructionClip != null)
+            voiceSource.PlayOneShot(instructionClip);
+
+        if (videoOverlay != null && videoPlayer != null)
+            yield return StartCoroutine(PlayVideoSequence());
+        else if (levelCompletePanel != null)
+            levelCompletePanel.SetActive(true);
+    }
+
+    private IEnumerator CombineMoveAndScale()
+    {
+        if (Camera.main == null || combineRoot == null) yield break;
+
+        Vector3 startPos = combineRoot.position;
+        Vector3 startScale = combineRoot.localScale;
+
+        Vector3 centerWorld = Camera.main.ViewportToWorldPoint(
+            new Vector3(0.5f, 0.5f, Mathf.Abs(Camera.main.transform.position.z))
+        );
+        centerWorld.z = 0f;
+
+        Vector3 targetScale = startScale * scaleMultiplier;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / Mathf.Max(0.01f, moveDuration);
+            float smooth = Mathf.SmoothStep(0f, 1f, t);
+
+            combineRoot.position = Vector3.Lerp(startPos, centerWorld, smooth);
+            combineRoot.localScale = Vector3.Lerp(startScale, targetScale, smooth);
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator PlayVideoSequence()
+    {
+        if (videoOverlay != null)
+            videoOverlay.SetActive(true);
+
+        if (videoContinueButton != null)
+            videoContinueButton.gameObject.SetActive(false);
+
+        if (videoContainer != null)
+        {
+            videoContainer.localScale = Vector3.one * videoStartScale;
+
+            float t = 0f;
+            while (t < 1f)
+            {
+                t += Time.unscaledDeltaTime / Mathf.Max(0.01f, videoPopDuration);
+                float scale = Mathf.SmoothStep(videoStartScale, videoEndScale, t);
+                videoContainer.localScale = Vector3.one * scale;
+                yield return null;
+            }
+        }
+
+        bool prepared = false;
+        void OnPrepared(VideoPlayer vu) => prepared = true;
+
+        videoPlayer.prepareCompleted += OnPrepared;
+        videoPlayer.Prepare();
+
+        while (!prepared)
+            yield return null;
+
+        videoPlayer.prepareCompleted -= OnPrepared;
+
+        videoPlayer.Play();
+
+        while (videoPlayer.isPlaying)
+            yield return null;
+
+        if (videoContinueButton != null)
+            videoContinueButton.gameObject.SetActive(true);
+    }
+
+    public void OnVideoContinuePressed()
+    {
+        if (videoOverlay != null)
+            videoOverlay.SetActive(false);
+
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+            videoPlayer.time = 0;
+        }
+
+        if (videoContinueButton != null)
+            videoContinueButton.gameObject.SetActive(false);
+
+        if (levelCompletePanel != null)
+            levelCompletePanel.SetActive(true);
+
+        SaveState();
+    }
+
+    public void OnHitWall()
+    {
+        if (finished || inPenalty) return;
+
+        mistakesMade++;
+        inPenalty = true;
+        SaveState();
+
+        if (voiceSource != null && wallClip != null)
+            voiceSource.PlayOneShot(wallClip);
+
+        StartCoroutine(ResetDraggableAfterDelay());
+    }
+
+    private IEnumerator ResetDraggableAfterDelay()
+    {
+        if (draggableItem == null)
+        {
+            inPenalty = false;
+            yield break;
+        }
+
+        draggableItem.Lock();
+        yield return new WaitForSeconds(wrongLockSeconds);
+
+        if (draggableStartPoint != null)
+        {
+            Rigidbody2D rb = draggableItem.GetComponent<Rigidbody2D>();
+
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+                rb.position = draggableStartPoint.position;
+            }
+            else
+            {
+                draggableItem.transform.position = draggableStartPoint.position;
+            }
+        }
+        else
+        {
+            draggableItem.ResetToStart();
+        }
+
+        draggableItem.Unlock();
+        inPenalty = false;
+        SaveState();
+    }
+
+    private void SaveLevelResult()
+    {
+        if (resultSent) return;
+        resultSent = true;
+
+        int durationSeconds = Mathf.RoundToInt(activePlayTime);
+
+        MazeOtigoSessionTracker.AddOrUpdateLevelResult(
+            levelPlayed,
+            durationSeconds,
+            mistakesMade
+        );
+    }
+
+    public void AddParentHelp()
+    {
+        parentHelpCount++;
+
+        if (ParentModeManager.Instance != null)
+            ParentModeManager.Instance.RegisterParentHelp();
+
+        MazeOtigoSessionTracker.AddParentHelpForLevel(levelPlayed);
+
+        SaveState();
+
+        Debug.Log("Maze Level 2 parentHelpCount arttı: " + parentHelpCount);
+    }
+
+    public void ReplayLevel()
+    {
+        ClearState();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void NextLevel()
+    {
+        ClearState();
+        SceneManager.LoadScene(nextLevelSceneName);
+    }
+
+    public void GoToMenu()
+    {
+        SaveState();
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("MazeLastLevel", currentScene);
+        PlayerPrefs.Save();
+
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    private void SaveState()
+    {
+        PlayerPrefs.SetInt(StatePrefix + "HasState", 1);
+        PlayerPrefs.SetInt(StatePrefix + "Finished", finished ? 1 : 0);
+        PlayerPrefs.SetInt(StatePrefix + "ResultSent", resultSent ? 1 : 0);
+        PlayerPrefs.SetInt(StatePrefix + "MistakesMade", mistakesMade);
+        PlayerPrefs.SetInt(StatePrefix + "ParentHelpCount", parentHelpCount);
+        PlayerPrefs.SetFloat(StatePrefix + "ActivePlayTime", activePlayTime);
+
+        if (draggableItem != null)
+        {
+            Vector3 pos = draggableItem.transform.position;
+            PlayerPrefs.SetFloat(StatePrefix + "ItemX", pos.x);
+            PlayerPrefs.SetFloat(StatePrefix + "ItemY", pos.y);
+            PlayerPrefs.SetFloat(StatePrefix + "ItemZ", pos.z);
+        }
+
+        PlayerPrefs.Save();
+    }
+
+    private void LoadState()
+    {
+        finished = PlayerPrefs.GetInt(StatePrefix + "Finished", 0) == 1;
+        resultSent = PlayerPrefs.GetInt(StatePrefix + "ResultSent", 0) == 1;
+        mistakesMade = PlayerPrefs.GetInt(StatePrefix + "MistakesMade", 0);
+        parentHelpCount = PlayerPrefs.GetInt(StatePrefix + "ParentHelpCount", 0);
+        activePlayTime = PlayerPrefs.GetFloat(StatePrefix + "ActivePlayTime", 0f);
+
+        if (draggableItem != null)
+        {
+            float x = PlayerPrefs.GetFloat(StatePrefix + "ItemX", draggableItem.transform.position.x);
+            float y = PlayerPrefs.GetFloat(StatePrefix + "ItemY", draggableItem.transform.position.y);
+            float z = PlayerPrefs.GetFloat(StatePrefix + "ItemZ", draggableItem.transform.position.z);
+
+            draggableItem.transform.position = new Vector3(x, y, z);
+
+            Rigidbody2D rb = draggableItem.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+                rb.position = new Vector2(x, y);
+            }
+        }
+    }
+
+    private bool HasSavedState()
+    {
+        return PlayerPrefs.GetInt(StatePrefix + "HasState", 0) == 1;
+    }
+
+    private void ClearState()
+    {
+        PlayerPrefs.DeleteKey(StatePrefix + "HasState");
+        PlayerPrefs.DeleteKey(StatePrefix + "Finished");
+        PlayerPrefs.DeleteKey(StatePrefix + "ResultSent");
+        PlayerPrefs.DeleteKey(StatePrefix + "MistakesMade");
+        PlayerPrefs.DeleteKey(StatePrefix + "ParentHelpCount");
+        PlayerPrefs.DeleteKey(StatePrefix + "ActivePlayTime");
+        PlayerPrefs.DeleteKey(StatePrefix + "ItemX");
+        PlayerPrefs.DeleteKey(StatePrefix + "ItemY");
+        PlayerPrefs.DeleteKey(StatePrefix + "ItemZ");
+        PlayerPrefs.Save();
+    }
+}

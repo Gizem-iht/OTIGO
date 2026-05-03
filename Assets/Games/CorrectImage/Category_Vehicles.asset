@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a845b7b0eda446b70f01292ed17d3, type: 3}
+  m_Name: Category_Vehicles
+  m_EditorClassIdentifier: Assembly-CSharp::CategoryData
+  categoryId: vehicles
+  categoryName: "Ta\u015F\u0131tlar"
+  items:
+  - displayName: car
+    sprite: {fileID: -8030835215644163416, guid: b15df3ee86e571f41a092025df223b6c, type: 3}
+    voice: {fileID: 8300000, guid: b0054e025df6daf48a3b3d28e96ba993, type: 3}
+  - displayName: bus
+    sprite: {fileID: 1223958431475000254, guid: b184c1d94a981384e8c2456a7abd2048, type: 3}
+    voice: {fileID: 8300000, guid: 17f85acf3a9d630458ba5eedc76f17e0, type: 3}
+  - displayName: train
+    sprite: {fileID: 5418884932637902491, guid: 3e2c59b7a125d504d88258fca6b4f81b, type: 3}
+    voice: {fileID: 8300000, guid: 93b93a50703cb1d4e9c95782c14b4c9f, type: 3}
+  - displayName: airplane
+    sprite: {fileID: -5085653369012018722, guid: 4c440c465ae3e9e43891ecbf5fe58c43, type: 3}
+    voice: {fileID: 8300000, guid: 36d0f4c2286bab84887b34bb6cdd7263, type: 3}
+  - displayName: ship
+    sprite: {fileID: -8833067885667587967, guid: 91bec98c244f75f409ab2c3da2c3261b, type: 3}
+    voice: {fileID: 8300000, guid: 6e04566e3c99f0a46bcd5ea8dcf4f53c, type: 3}
+  - displayName: bicycle
+    sprite: {fileID: -8345046098092793376, guid: 1cb2a010cd6aedc4aa1ca84ee328c4ab, type: 3}
+    voice: {fileID: 8300000, guid: 92850fdc704420345afad46fafa44e76, type: 3}

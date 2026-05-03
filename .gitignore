@@ -1,0 +1,40 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Unity Android/Gradle exports and generated player data
+OTIGO/
+*.apk
+*.aab
+*.so
+*.dbg.so
+
+# IDE/generated project files
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Crash/replay logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Keep Unity package/cache lock files that belong in source control
+!Packages/manifest.json
+!Packages/packages-lock.json

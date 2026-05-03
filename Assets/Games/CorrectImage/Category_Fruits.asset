@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a845b7b0eda446b70f01292ed17d3, type: 3}
+  m_Name: Category_Fruits
+  m_EditorClassIdentifier: Assembly-CSharp::CategoryData
+  categoryId: fruits
+  categoryName: Meyveler
+  items:
+  - displayName: apple
+    sprite: {fileID: 2779283545630505673, guid: a195933e41ad87a4dbc3ef0abef36f66, type: 3}
+    voice: {fileID: 8300000, guid: ec545c354d53bda48b6fb8b2851b2223, type: 3}
+  - displayName: pear
+    sprite: {fileID: 7503260335715952965, guid: 51668f9364725534c87e9bff0f7dd365, type: 3}
+    voice: {fileID: 8300000, guid: be806878f85f9e44e991b725c48b3e21, type: 3}
+  - displayName: watermalon
+    sprite: {fileID: -6053131974547952348, guid: d6b5ebbd903294e4ea2d4fcf86272b5d, type: 3}
+    voice: {fileID: 8300000, guid: 062fa96c7ffd68e479941407c40b6931, type: 3}
+  - displayName: orange
+    sprite: {fileID: -7751063365801126495, guid: 90a9aad461b9f534eaa8a3dee29ff769, type: 3}
+    voice: {fileID: 8300000, guid: af023cea118df114bacfc33742c21ecd, type: 3}
+  - displayName: banana
+    sprite: {fileID: 6830641362332318611, guid: 4e760db97bc266f47bf428f0a4bef873, type: 3}
+    voice: {fileID: 8300000, guid: 9c11318fa1bf66f4abe40ccfb0b75e52, type: 3}
+  - displayName: grape
+    sprite: {fileID: -8189856589858543388, guid: 5c49bf2493077d04bba216171e990a13, type: 3}
+    voice: {fileID: 8300000, guid: 989fe402e295bfa42ba4b6a76274f72a, type: 3}
+  - displayName: strawberry
+    sprite: {fileID: -2007458971190417734, guid: 1e88d492bb6fde24e8059f1c5b51af08, type: 3}
+    voice: {fileID: 8300000, guid: 44b97d735d4f9a4408e354113b3f580e, type: 3}

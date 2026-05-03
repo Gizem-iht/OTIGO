@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a845b7b0eda446b70f01292ed17d3, type: 3}
+  m_Name: Category_HouseItems
+  m_EditorClassIdentifier: Assembly-CSharp::CategoryData
+  categoryId: house_items
+  categoryName: "Ev E\u015Fyalar\u0131"
+  items:
+  - displayName: table
+    sprite: {fileID: -1043239441667664304, guid: 7d51175a3c5c1bc4f9ef33cc5080905a, type: 3}
+    voice: {fileID: 8300000, guid: 97d44c1dc0733664985a9420b3bf1e64, type: 3}
+  - displayName: chair
+    sprite: {fileID: 4784444529832102395, guid: 0f9f39ddc97e2894fb7fe9c56406a0ca, type: 3}
+    voice: {fileID: 8300000, guid: 19d9fe00b73acda40ba259f2457c5304, type: 3}
+  - displayName: bed
+    sprite: {fileID: -2088952109959190614, guid: f7712c22173043a409171432b6d569fc, type: 3}
+    voice: {fileID: 8300000, guid: 75336b9bb6a436149b8f27d86b7edc4a, type: 3}
+  - displayName: lamp
+    sprite: {fileID: -2473415005727879610, guid: f1a48a012be8511458553ef1aec63b7e, type: 3}
+    voice: {fileID: 8300000, guid: d3ee3b1131ee5a347a9aca4e4a64dbd1, type: 3}
+  - displayName: television
+    sprite: {fileID: -2892203382722042286, guid: a1488d3bc43611c4d9af88624d983443, type: 3}
+    voice: {fileID: 8300000, guid: 66d0e66783684f84ba824a235304a2cd, type: 3}
+  - displayName: cupboard
+    sprite: {fileID: -7591334411560898536, guid: 929e5c2ffe8e6ca4d90f1d5400eee60a, type: 3}
+    voice: {fileID: 8300000, guid: 528ae223f7484db4a816ffc854220b2c, type: 3}

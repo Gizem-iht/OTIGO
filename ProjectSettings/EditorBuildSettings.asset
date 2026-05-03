@@ -1,0 +1,235 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/GameRouterScene.unity
+    guid: 89ef1e9fa557ac9409240c539add3881
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Games/ObjectSelect/ObjectSelect_MainMenu.unity
+    guid: 5ce909e02a908fe4f8275b4046261708
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level1.unity
+    guid: d908bcc83392c7e4aaa5abfcaa28e191
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level2.unity
+    guid: 80d8750c5fde79644844dec18745b659
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level3.unity
+    guid: a5d46a38686ba024fb61d08f86ab160d
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level4.unity
+    guid: 1a8dfbc51f8ba7b4a86f352d9b6384db
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level5.unity
+    guid: 895fe211fc2449f43a77e2e3bb72439e
+  - enabled: 1
+    path: Assets/Scenes/ObjectSelect_Level6.unity
+    guid: 3f5a5125b61807848a0843b7f7db22c4
+  - enabled: 1
+    path: Assets/Games/ObjectSelect/ObjectSelect_TebrikScene.unity
+    guid: 8858207e489c10c41a2633f6cbf68ed2
+  - enabled: 1
+    path: Assets/Scenes/CorrectImage_Main.unity
+    guid: 9f9bb3b85629f73458aa591209d80706
+  - enabled: 1
+    path: Assets/Games/CorrectImage/CorrectImage_CategorySelect.unity
+    guid: 95d20e91a1e597b4382f1bd55402ada2
+  - enabled: 1
+    path: Assets/Games/CorrectImage/CorrectImage_CorrectImage_GameLevel.unity
+    guid: 2d77af47ca25e3941a376f5a411d27c7
+  - enabled: 1
+    path: Assets/Games/CorrectImage/CorrectImage_TebrikScene.unity
+    guid: 493f3da9b23b068408845e73c27aa57b
+  - enabled: 1
+    path: Assets/Games/Puzzle/Scenes/Puzzle_Bootstrap.unity
+    guid: e6028d49bd4911b4ba0d05a9d904192a
+  - enabled: 1
+    path: Assets/Games/Puzzle/Scenes/Puzzle_MainMenu.unity
+    guid: a2b5da30328537e4ab7fce1971dc4e20
+  - enabled: 1
+    path: Assets/Games/Puzzle/level1/Puzzle_level1.unity
+    guid: 1bc35c7910e63f444a9cfd9b86152c9e
+  - enabled: 1
+    path: Assets/Games/Puzzle/level2/Puzzle_level2.unity
+    guid: c3ed9c6cbdfd0004c9c5c7bf57f35095
+  - enabled: 1
+    path: Assets/Games/Puzzle/level3/Puzzle_Level3.unity
+    guid: dff0a6119cea520499492933adb91e90
+  - enabled: 1
+    path: Assets/Games/Puzzle/level4/Puzzle_Level4.unity
+    guid: 7de61da456ef36245a9b9e176ca033fe
+  - enabled: 1
+    path: Assets/Games/Puzzle/level5/Puzzle_Level5.unity
+    guid: 5fe5edc958d947b4ea7f1b96499374c8
+  - enabled: 1
+    path: Assets/Games/Puzzle/level6/Puzzle_Level6.unity
+    guid: 3bc5a74e07f2080458642a0a8404654f
+  - enabled: 1
+    path: Assets/Games/Puzzle/Scenes/Puzzle_TebrikScene.unity
+    guid: 7baefeb5b80508b4fa090aa8b6d806e2
+  - enabled: 0
+    path: Assets/Maze_MainMenu.unity
+    guid: 9dbdd613d12ea0a4f87de66edc2ec79e
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/MazeMainMenu.unity
+    guid: 3306e255287887044a23f91040a9df55
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level1.unity
+    guid: 29c22b16ff500014682c7367e17ad6d3
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level2.unity
+    guid: 307e5f84bac48294c9db16cb4a2ad39e
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level4.unity
+    guid: a6bcd98037f5d044bb56bea095e182f3
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level3.unity
+    guid: 12ffefe05274f814094d2e7226b98fef
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level5.unity
+    guid: 92dcdd7e38722ba48b6e1ae69eae1992
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level6.unity
+    guid: 7668cfbf21108f4479979ae6b1f02d92
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_Level7.unity
+    guid: d92c7fdce8fe4654e8140afc3051c07a
+  - enabled: 1
+    path: Assets/Games/Maze/Scene/Maze_TebrikScene.unity
+    guid: e6aefcdfc2186fb4d836eb18d54efcee
+  - enabled: 1
+    path: Assets/Games/Shadow/Main/ShadowMatch_MainMenu.unity
+    guid: 4c5fa4d9ad0f5684cb3ff9b1341bdc16
+  - enabled: 1
+    path: Assets/Games/Shadow/level1/ShadowMatch_Level1.unity
+    guid: 755a5500bbe77a14e990b1179cc08aaf
+  - enabled: 1
+    path: Assets/Games/Shadow/level2/ShadowMatch_Level2.unity
+    guid: a4004985a0644dc42a5972aedd97efbd
+  - enabled: 1
+    path: Assets/Games/Shadow/level4/ShadowMatch_Level3.unity
+    guid: 5bf54296470216d458b9f496749f7483
+  - enabled: 1
+    path: Assets/Games/Shadow/level3/ShadowMatch_Level4.unity
+    guid: d933e16a3a59d2843a1438f5f2d12093
+  - enabled: 1
+    path: Assets/Games/Shadow/level5/ShadowMatch_Level5.unity
+    guid: debcdd2e065715e449600d57698853d8
+  - enabled: 1
+    path: Assets/Games/Shadow/level6/ShadowMatch_Level6.unity
+    guid: 157ebe7c92a05644c8c3b287c07c4b6b
+  - enabled: 1
+    path: Assets/Games/Shadow/level7/ShadowMatch_Level7.unity
+    guid: 4718bb1094b091747891faf185dbbabf
+  - enabled: 1
+    path: Assets/Games/Shadow/level8/ShadowMatch_Level8.unity
+    guid: 7a5143cb84fa12f4bbd6fe8a0a83d3c4
+  - enabled: 1
+    path: Assets/Games/Shadow/Sonuc/ShadowMatch_TebrikScene.unity
+    guid: b2b35ae7739d2bf4b94c828571928c72
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_MainMenu.unity
+    guid: 36ac8569de8060e41a7fe89372d91a5e
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level1.unity
+    guid: 1eb307119309a1a4c9a97d1a368b360c
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level2.unity
+    guid: e381bd13e068a62459abcc9d775939a2
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level3.unity
+    guid: f42ed69d9980dcb4689982424eed38ec
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level4.unity
+    guid: e8b288c3629b134449c8383331c8db5a
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level5.unity
+    guid: d3b31c6317da7564f9cc327c883bb25b
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjectmatching_Level6.unity
+    guid: 37c029a91dc004346826026375c43339
+  - enabled: 1
+    path: Assets/Games/Numberobjectmatching/numberobjects_tebriks.unity
+    guid: 0b8bdce9a08f93c418621c08a3651191
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_MainMenu.unity
+    guid: 374ce3761e0659d48883afce8ca50c35
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level1.unity
+    guid: ebeab38be930333428fc82f2b302ad48
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level2.unity
+    guid: 22044bb218e48424a9869e72808c0d3c
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level3.unity
+    guid: 9797abaa57adb554782e25264a378bf2
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level4.unity
+    guid: 37a86a636ec04ef4f85f94a85017bebb
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level5.unity
+    guid: 990f1012718052b42ba238a74f39e805
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_Level6.unity
+    guid: 22e50d3e5a3f48644a216fd9c13149e8
+  - enabled: 1
+    path: Assets/Games/Opposite/schene/Opposites_TebrikScene.unity
+    guid: 0808072729c5127449a1e7205fc1ee9f
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_MainMenu.unity
+    guid: f8d640df7f7e2b7478d4a642e5b53bc3
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level1.unity
+    guid: 97d403a73eb54754c958ecb8e6f039ca
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level2.unity
+    guid: 5b4b342c5192b684aac52d53430c6584
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level3.unity
+    guid: 4a0fd8e539e0ab14f9b7c093238a963c
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level4.unity
+    guid: 38a8631f66b09c64d8a4c7629363197c
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level5.unity
+    guid: cfe1b35c019b89e44adf0b18192f2b6e
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Level6.unity
+    guid: 8a2fc5fb7a872db4c9a0a92b9ca45404
+  - enabled: 1
+    path: Assets/Games/StoryQuiz/StoryQuiz_Tebrik.unity
+    guid: 52727abecd61463478ac1d53c3953482
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_MainMenu.unity
+    guid: 749ff80790a72344c9bbb6da84054bdf
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level1.unity
+    guid: 2efda5bdfa790ef49a3799796a33b3dd
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level2.unity
+    guid: 55e36af7588beae449e457bc975e4401
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level3.unity
+    guid: d948e2dfab6915d45bae5f2924d0cb0b
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level4.unity
+    guid: e3fe3a8ad3e46e84ab271b55c3927c63
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level5.unity
+    guid: 28e6b46dcd398fc4bb051b1e63fa5536
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Level6.unity
+    guid: ca0905aabeeb6254ba9943578481150a
+  - enabled: 1
+    path: Assets/Games/coloringobject/SCENE/Coloring_Tebrik.unity
+    guid: 529c9d70cffc08a43a001d726094e71f
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_UseUCBPForAssetBundles: 0

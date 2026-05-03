@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a845b7b0eda446b70f01292ed17d3, type: 3}
+  m_Name: Category_Toys
+  m_EditorClassIdentifier: Assembly-CSharp::CategoryData
+  categoryId: toys
+  categoryName: Oyuncaklar
+  items:
+  - displayName: ball
+    sprite: {fileID: 2314203482002288335, guid: 0ec8046f8a832bd45ae555b42df362c9, type: 3}
+    voice: {fileID: 8300000, guid: e3104106d1ea0ef4d8777395766c88b4, type: 3}
+  - displayName: car
+    sprite: {fileID: -8030835215644163416, guid: 2d95d7d34abef564a9935f782d11d56e, type: 3}
+    voice: {fileID: 8300000, guid: ac7e751f4528fb7449bb4cbc559aa553, type: 3}
+  - displayName: baby
+    sprite: {fileID: 5328332788402992666, guid: 67f0f000eaa2c494b8334290fe4c6bea, type: 3}
+    voice: {fileID: 8300000, guid: 4276cb2fa6922d24583478d839c0d64d, type: 3}
+  - displayName: teddy
+    sprite: {fileID: 3551233614117194328, guid: 2f53bfc19c1c0944f975bc9227303891, type: 3}
+    voice: {fileID: 8300000, guid: a57c80430118be44a8aaea05bb3f442a, type: 3}
+  - displayName: airplane
+    sprite: {fileID: -5681613791555460825, guid: be7ccd0c8f5a56c4f8b0fee7eb70bd76, type: 3}
+    voice: {fileID: 8300000, guid: 62d282ba1d075cd4d82e0e8685ae2e45, type: 3}
+  - displayName: robot
+    sprite: {fileID: -2185472608353246101, guid: 4bfaca2ce50f0df439b14316fbd5a8b8, type: 3}
+    voice: {fileID: 8300000, guid: fe8b724d816dae8479005a6dfe53c709, type: 3}
