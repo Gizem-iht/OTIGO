@@ -1041,6 +1041,7 @@ MonoBehaviour:
   quitButton: {fileID: 2107565302}
   firstLevelSceneName: Coloring_Level1
   lastLevelKey: Coloring_LastLevel
+  savedTaskProgressKeysKey: Coloring_TaskProgressKeys
 --- !u!4 &1955744077
 Transform:
   m_ObjectHideFlags: 0
@@ -1119,7 +1120,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1955744075}
         m_TargetAssemblyTypeName: 
         m_MethodName: 
         m_Mode: 1

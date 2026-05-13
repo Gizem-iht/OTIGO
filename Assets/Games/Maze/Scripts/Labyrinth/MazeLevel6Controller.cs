@@ -342,6 +342,7 @@ public class MazeLevel6Controller : MonoBehaviour
     public void NextLevel()
     {
         ClearState();
+        OtigoGameProgress.SaveNextOrClearForFinal("MazeLastLevel", nextLevelSceneName, "Maze_TebrikScene");
         SceneManager.LoadScene(nextLevelSceneName);
     }
 

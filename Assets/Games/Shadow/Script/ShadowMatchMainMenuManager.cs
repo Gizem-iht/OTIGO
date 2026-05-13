@@ -19,6 +19,8 @@ public class ShadowMatchMainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        ShadowMatchSoundToggle.SyncAudioListenerFromPlayerPrefs();
+
         SetMainMenuButtonsActive(false);
 
         if (backgroundMusic != null)
@@ -66,22 +68,22 @@ public class ShadowMatchMainMenuManager : MonoBehaviour
 
     public void LoadGame()
     {
-        if (!PlayerPrefs.HasKey(LastLevelKey))
-        {
-            PlayerPrefs.SetString(LastLevelKey, defaultLevelSceneName);
-            PlayerPrefs.Save();
-        }
-
-        string lastLevel = PlayerPrefs.GetString(LastLevelKey, defaultLevelSceneName);
+        string lastLevel = OtigoGameProgress.GetResumeScene(LastLevelKey, defaultLevelSceneName);
         SceneManager.LoadScene(lastLevel);
     }
 
     public void QuitGame()
     {
-        Application.Quit();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

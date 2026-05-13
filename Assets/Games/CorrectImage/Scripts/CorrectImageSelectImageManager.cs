@@ -199,6 +199,9 @@ public class CorrectImageSelectImageManager : MonoBehaviour
 
     public void NextLevel()
     {
+        if (ParentModeManager.Instance != null && ParentModeManager.Instance.IsParentModeActive)
+            ParentModeManager.Instance.CloseParentMode();
+
         SceneManager.LoadScene(congratsSceneName);
     }
 }

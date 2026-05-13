@@ -35,6 +35,17 @@ public class ColoringSessionTracker : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    public static ColoringSessionTracker EnsureInstance()
+    {
+        if (Instance != null)
+            return Instance;
+
+        GameObject trackerObject = new GameObject("ColoringSessionTracker");
+        Instance = trackerObject.AddComponent<ColoringSessionTracker>();
+        DontDestroyOnLoad(trackerObject);
+        return Instance;
+    }
+
     public void AddOrUpdateLevelResult(int level, int durationSeconds, int mistakesMade)
     {
         LevelResult existing = levelResults.Find(x => x.level == level);
@@ -54,6 +65,10 @@ public class ColoringSessionTracker : MonoBehaviour
         }
 
         RecalculateTotals();
+
+        FlushAndSend();
+
+        OtigoHomeworkAssignment.NotifyDistinctLevelsCompleted(levelResults.Count);
     }
 
     public void AddParentHelp()
@@ -76,7 +91,6 @@ public class ColoringSessionTracker : MonoBehaviour
 
     public void SendFinalResult()
     {
-
         Debug.Log("COLORING FINAL RESULT");
         Debug.Log("ActivityId: " + activityId);
         Debug.Log("Duration: " + totalDurationSeconds);
@@ -86,14 +100,33 @@ public class ColoringSessionTracker : MonoBehaviour
 
         if (OtigoActivityResultSender.Instance != null)
         {
+            List<OtigoActivityResultSender.LevelResult> otigoLevelResults =
+                new List<OtigoActivityResultSender.LevelResult>();
+
+            foreach (LevelResult result in levelResults)
+            {
+                otigoLevelResults.Add(new OtigoActivityResultSender.LevelResult
+                {
+                    levelNumber = result.level,
+                    durationSeconds = result.durationSeconds,
+                    mistakesMade = result.mistakesMade,
+                    helpCount = 0
+                });
+            }
+
             OtigoActivityResultSender.Instance.SendActivityResult(
                 activityId,
                 totalDurationSeconds,
                 totalMistakesMade,
                 parentHelpCount,
+                levelResults.Count,
                 levelPlayed,
-                levelResults.Count
+                otigoLevelResults
             );
+        }
+        else
+        {
+            Debug.LogError("COLORING FINAL RESULT gonderilemedi: OtigoActivityResultSender.Instance yok.");
         }
     }
 
@@ -107,5 +140,32 @@ public class ColoringSessionTracker : MonoBehaviour
         Instance.parentHelpCount = 0;
         Instance.levelPlayed = 0;
         Instance.levelResults.Clear();
+    }
+
+    public bool HasUnflushedProgress()
+    {
+        return levelResults != null && levelResults.Count > 0;
+    }
+
+    /// <summary>
+    /// Kayıtlı level verisi varsa backend'e gönderir (tekrarlı POST upsert ile sorun değil).
+    /// </summary>
+    public void FlushAndSend()
+    {
+        if (!HasUnflushedProgress() || OtigoActivityResultSender.Instance == null)
+            return;
+
+        SendFinalResult();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+            FlushAndSend();
+    }
+
+    private void OnApplicationQuit()
+    {
+        FlushAndSend();
     }
 }

@@ -14,14 +14,20 @@ public class TebrikSceneController : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Oyun kapatılıyor...");
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                OtigoGameProgress.ClearGame("NumberObjectMatching");
+
+                Debug.Log("Oyun kapatılıyor...");
 
 #if UNITY_EDITOR
-        // Editor'de oyunu durdurur
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #else
-        // Android / build'de uygulamayı kapatır
-        Application.Quit();
+                Application.Quit();
 #endif
+            },
+            1f);
     }
 }

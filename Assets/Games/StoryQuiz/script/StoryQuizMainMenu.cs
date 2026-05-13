@@ -33,21 +33,26 @@ public class StoryQuizMainMenu : MonoBehaviour
 
         Debug.Log("StoryQuiz MainMenu kayıtlı level: " + PlayerPrefs.GetString(lastLevelKey, "KAYIT YOK"));
     }
-    
-public void StartGame()
-{
-    string saved = PlayerPrefs.GetString("StoryQuiz_LastLevel", "KAYIT YOK");
-    Debug.Log("KAYIT = " + saved);
 
-    SceneManager.LoadScene(saved == "KAYIT YOK" ? "StoryQuiz_Level1" : saved);
-}
+    public void StartGame()
+    {
+        string targetScene = OtigoGameProgress.GetResumeScene(lastLevelKey, firstLevelSceneName);
+        Debug.Log("StoryQuiz StartGame -> acilacak level = " + targetScene);
+        SceneManager.LoadScene(targetScene);
+    }
 
     public void QuitGame()
     {
-        Application.Quit();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

@@ -422,7 +422,7 @@ MonoBehaviour:
   quitButton: {fileID: 993622738}
   firstLevelSceneName: StoryQuiz_Level1
   activityId: 11
-  lastLevelKey: StoryQuiz_Level6
+  lastLevelKey: StoryQuiz_LastLevel
 --- !u!4 &1018660376
 Transform:
   m_ObjectHideFlags: 0

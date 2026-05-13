@@ -434,16 +434,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278062174}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3115538, y: 1.3115538, z: 1.3115538}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 497853984}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1059.0492, y: 489.49573}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &278062176
@@ -475,7 +475,7 @@ MonoBehaviour:
   nextButtonObj: {fileID: 1091574211}
   exitButton: {fileID: 0}
   nextButtonImage: {fileID: 1091574214}
-  nextBlinkSpeed: 0.4
+  nextBlinkSueed: 0.4
   allNumbers:
   - {fileID: 1601843989}
   - {fileID: 1588664252}
@@ -489,7 +489,7 @@ MonoBehaviour:
   extraSuccessClip: {fileID: 8300000, guid: 5346341dfc5c6e049a7592a16a17b002, type: 3}
   goNextVoiceClip: {fileID: 8300000, guid: 692ce9fe6a17c094ca34f4ba7523a963, type: 3}
   blinkCount: 3
-  blinkSpeed: 0.6
+  blinkSueed: 0.6
   glowColor: {r: 1, g: 0.9, b: 0.2, a: 1}
   extraSuccessDelayAfterCorrect: 0.2
   goNextExtraDelay: 0
@@ -1124,7 +1124,6 @@ RectTransform:
   - {fileID: 1275041657}
   - {fileID: 1798462315}
   - {fileID: 1091574212}
-  - {fileID: 278062175}
   - {fileID: 611431049}
   - {fileID: 432253749}
   - {fileID: 1356369435}
@@ -2110,6 +2109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f97d743133ed4304cb07c87b28f203ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropZoneUI
+  dropZoneId: zone_1
   correctNumber: 1
   controller: {fileID: 278062177}
   targetImageToScale: {fileID: 816326501}
@@ -3732,6 +3732,7 @@ MonoBehaviour:
   isParentModeActive: 0
   parentHelpCount: 0
   patternPanelAutoCloseSeconds: 5
+  controlledVoiceSource: {fileID: 0}
 --- !u!4 &1592905052
 Transform:
   m_ObjectHideFlags: 0
@@ -4436,3 +4437,4 @@ SceneRoots:
   - {fileID: 558561560}
   - {fileID: 1592905052}
   - {fileID: 1471802551}
+  - {fileID: 278062175}

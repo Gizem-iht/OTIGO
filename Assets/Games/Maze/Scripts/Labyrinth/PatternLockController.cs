@@ -24,7 +24,7 @@ public class PatternLockController : MonoBehaviour
     public Action OnPatternSuccess;
     public Action OnPatternFail;
 
-    private string correctPattern = "1,2,3,6,9";
+    private string correctPattern = "";
     private RectTransform rectTransform;
     private Vector2 originalAnchoredPos;
 
@@ -39,6 +39,16 @@ public class PatternLockController : MonoBehaviour
     {
         if (ParentPatternProvider.Instance != null)
             correctPattern = ParentPatternProvider.Instance.CurrentPattern;
+
+        if (string.IsNullOrEmpty(correctPattern) && OtigoActivityResultSender.Instance != null)
+            correctPattern = OtigoActivityResultSender.Instance.GetParentPattern();
+
+        if (string.IsNullOrEmpty(correctPattern))
+        {
+            inputLocked = true;
+            Debug.LogError("Parent pattern bulunamadi. Frontend parentPattern gondermeden parent mode acilamaz.");
+            return;
+        }
 
         Debug.Log("Kullanılacak parent pattern: " + correctPattern);
         ResetPattern();

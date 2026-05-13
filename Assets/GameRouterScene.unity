@@ -208,8 +208,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OtigoActivityResultSender
   childId: 1
-  baseUrl: https://otigo-app.onrender.com/api/v1/activities/result/
-  bearerToken: eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVkVMSSIsInN1YiI6ImtlcmVta2FmZXMyNEBnbWFpbC5jb20iLCJpYXQiOjE3NzQ5NTg3MDAsImV4cCI6MTc3NzU1MDcwMH0.X-zJwOp-PmiQFKxvBAsJO7VpqI_krWGmDvj3te4p4e0NFEcKHFZGctMkicOIXMgHz0Rsq8cLjFRm0ktnD7auBg
+  baseUrl: https://otigo-app.onrender.com/api/v1/activity-results/child/
+  bearerToken: eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVkVMSSIsInN1YiI6ImxhcmFtaW5ha2FyYWRlbml6ekBnbWFpbC5jb20iLCJpYXQiOjE3Nzc4ODk2MzUsImV4cCI6MTc4MDQ4MTYzNX0.ay0mRm0Ive9kve-DG5WDTyPAs1ATaXaEBVmgRqM9KkbVF5M3Yp1Gc9pd3PV-ElawKh_eHuyXUHNJf-9iCyuDQg
 --- !u!1 &2123510947
 GameObject:
   m_ObjectHideFlags: 0

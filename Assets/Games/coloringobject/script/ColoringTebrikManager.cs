@@ -40,15 +40,22 @@ public class ColoringTebrikManager : MonoBehaviour
 
     public void ExitGame()
     {
-        ClearColoringProgress();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                OtigoGameProgress.ClearGame("Coloring");
+                ClearColoringProgress();
 
-        ColoringSessionTracker.ResetSession();
+                ColoringSessionTracker.ResetSession();
 
-        Application.Quit();
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 
     private void ClearColoringProgress()

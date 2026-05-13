@@ -3,24 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class OppositesMainMenuController : MonoBehaviour
 {
-    private const string LastLevelKey = "OppositesLastLevel";
+    private const string LastLevelKey = "Opposites_LastLevelSceneName";
 
     [Header("İlk açılacak level")]
     public string defaultFirstLevelSceneName = "Opposites_Level1";
 
     public void StartGame()
     {
-        string targetScene = defaultFirstLevelSceneName;
-
-        if (PlayerPrefs.HasKey(LastLevelKey))
-        {
-            string savedScene = PlayerPrefs.GetString(LastLevelKey);
-
-            if (!string.IsNullOrEmpty(savedScene))
-            {
-                targetScene = savedScene;
-            }
-        }
+        string targetScene = OtigoGameProgress.GetResumeScene(LastLevelKey, defaultFirstLevelSceneName);
 
         Debug.Log("StartGame -> Açılacak scene: " + targetScene);
         SceneManager.LoadScene(targetScene);
@@ -30,17 +20,22 @@ public class OppositesMainMenuController : MonoBehaviour
     {
         Debug.Log("Oyundan çıkılıyor...");
 
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+                Application.Quit();
 #endif
+            },
+            1f);
     }
 
     public void ResetProgress()
     {
-        PlayerPrefs.DeleteKey(LastLevelKey);
-        PlayerPrefs.Save();
+        OtigoGameProgress.ClearGame("Opposites");
 
         Debug.Log("Opposites progress sıfırlandı.");
     }

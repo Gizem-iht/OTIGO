@@ -3,65 +3,46 @@ using UnityEngine.SceneManagement;
 
 public class MazeMainMenuController : MonoBehaviour
 {
-    [Header("İlk açılacak level")]
+    [Header("Ilk acilacak level")]
     public string firstLevelSceneName = "Maze_Level1";
 
     [Header("Kaydedilen level key")]
     public string lastLevelKey = "MazeLastLevel";
 
-    [Header("Menu scene adı")]
+    [Header("Menu scene adi")]
     public string menuSceneName = "MazeMainMenu";
 
     public void StartGame()
     {
-        string savedLevel = PlayerPrefs.GetString(lastLevelKey, "");
+        string targetScene = OtigoGameProgress.GetResumeScene(lastLevelKey, firstLevelSceneName);
 
-        Debug.Log("Kaydedilen level: " + savedLevel);
+        if (targetScene == menuSceneName)
+            targetScene = firstLevelSceneName;
 
-        // Kayıt yoksa ilk level
-        if (string.IsNullOrEmpty(savedLevel))
-        {
-            Debug.Log("Kayıt yok, ilk level açılıyor: " + firstLevelSceneName);
-            SceneManager.LoadScene(firstLevelSceneName);
-            return;
-        }
-
-        // Eğer yanlışlıkla menu kaydedildiyse yine ilk levele git
-        if (savedLevel == menuSceneName)
-        {
-            Debug.LogWarning("Kaydedilen scene menu olduğu için ilk levele yönlendiriliyor.");
-            SceneManager.LoadScene(firstLevelSceneName);
-            return;
-        }
-
-        // Build settings içinde varsa kayıtlı levele git
-        if (Application.CanStreamedLevelBeLoaded(savedLevel))
-        {
-            Debug.Log("Kayıtlı level açılıyor: " + savedLevel);
-            SceneManager.LoadScene(savedLevel);
-        }
-        else
-        {
-            Debug.LogWarning("Kaydedilen scene bulunamadı. İlk level açılıyor: " + firstLevelSceneName);
-            SceneManager.LoadScene(firstLevelSceneName);
-        }
+        Debug.Log("Maze StartGame -> acilacak level: " + targetScene);
+        SceneManager.LoadScene(targetScene);
     }
 
     public void ExitGame()
     {
-        Debug.Log("Oyun kapatılıyor.");
+        Debug.Log("Oyun kapatiliyor.");
 
-        #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-        #else
-        Application.Quit();
-        #endif
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            },
+            1f);
     }
 
     public void ClearSavedProgress()
     {
-        PlayerPrefs.DeleteKey(lastLevelKey);
-        PlayerPrefs.Save();
+        OtigoGameProgress.ClearGame("Maze");
         Debug.Log("Kaydedilen progress silindi.");
     }
 }

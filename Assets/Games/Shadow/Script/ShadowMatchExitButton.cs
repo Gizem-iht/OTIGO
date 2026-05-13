@@ -4,12 +4,25 @@ public class ShadowMatchExitButton : MonoBehaviour
 {
     public void QuitGame()
     {
-        Debug.Log("Oyun kapatılıyor...");
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+                if (sceneName.ToLowerInvariant().Contains("maze"))
+                    OtigoGameProgress.ClearGame("Maze");
+                else
+                    OtigoGameProgress.ClearGame("ShadowMatch");
+
+                Debug.Log("Oyun kapatılıyor...");
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+                Application.Quit();
 #endif
+            },
+            1f);
     }
 }

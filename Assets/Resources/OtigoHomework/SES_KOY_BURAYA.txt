@@ -1,0 +1,19 @@
+OTIGO ödev kutlaması — ses dosyası
+====================================
+
+1) Bu klasöre alkış / neşeli bir ses koyun (ör. wav, mp3).
+2) Unity'de dosyayı seçin; Inspector'da Asset adının tam olarak şu olması gerekir:
+
+   Celebration
+
+   Yani Project penceresinde görünen isim "Celebration" olmalı (uzantı değil).
+3) Kod şu yolu kullanır: Resources.Load("OtigoHomework/Celebration")
+
+Yıldız görseli (isteğe bağlı)
+==============================
+Bu klasöre "StarIcon" adında bir Sprite (PNG) koyabilirsiniz.
+Texture Import: Texture Type = Sprite (2D and UI).
+Asset adı: StarIcon
+Kod: Resources.Load("OtigoHomework/StarIcon")
+
+Koymazsanız: sarı yuvarlak rozet otomatik çizilir.

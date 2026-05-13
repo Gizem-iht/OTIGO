@@ -608,10 +608,20 @@ public abstract class StoryQuizBaseController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void RestartLevel()
+    {
+        ReplayLevel();
+    }
+
     public void GoMenu()
     {
         SaveCurrentLevelAsProgress();
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    public void GoToMainMenu()
+    {
+        GoMenu();
     }
 
     public void GoNextLevel()
@@ -621,8 +631,7 @@ public abstract class StoryQuizBaseController : MonoBehaviour
 
         if (isLastLevel)
         {
-            PlayerPrefs.DeleteKey(lastLevelKey);
-            PlayerPrefs.Save();
+            OtigoGameProgress.ClearKey(lastLevelKey);
 
             StoryQuizOtigoSessionTracker.SendFinalResultIfPossible();
 
@@ -632,8 +641,7 @@ public abstract class StoryQuizBaseController : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(nextSceneName))
             {
-                PlayerPrefs.SetString(lastLevelKey, nextSceneName);
-                PlayerPrefs.Save();
+                OtigoGameProgress.SaveLevel(lastLevelKey, nextSceneName);
 
                 SceneManager.LoadScene(nextSceneName);
             }
@@ -642,6 +650,11 @@ public abstract class StoryQuizBaseController : MonoBehaviour
                 Debug.LogWarning("nextSceneName boş bırakılmış.");
             }
         }
+    }
+
+    public void GoToNextLevel()
+    {
+        GoNextLevel();
     }
 
     public void ReplayCurrentVoice()

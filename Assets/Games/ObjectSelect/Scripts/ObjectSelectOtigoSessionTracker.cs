@@ -100,21 +100,28 @@ public static class ObjectSelectOtigoSessionTracker
                   ", mistakesMade: " + mistakesMade +
                   ", helpCount: " + helpCount +
                   ", targetCount: " + targetCount);
+
+        FlushAndSend();
+
+        OtigoHomeworkAssignment.NotifyDistinctLevelsCompleted(levelResults.Count);
     }
 
-    public static void SendFinalResultIfPossible()
+    public static bool HasUnflushedData()
+    {
+        return sessionStarted
+            && levelResults.Count > 0
+            && OtigoActivityResultSender.Instance != null;
+    }
+
+    public static void FlushAndSend()
+    {
+        TryPostAggregateSnapshot();
+    }
+
+    private static void TryPostAggregateSnapshot()
     {
         if (!sessionStarted)
-        {
-            Debug.LogWarning("ObjectSelect session yok, final sonuç gönderilemez.");
             return;
-        }
-
-        if (finalSent)
-        {
-            Debug.LogWarning("ObjectSelect final sonuç zaten gönderildi.");
-            return;
-        }
 
         if (OtigoActivityResultSender.Instance == null)
         {
@@ -123,10 +130,7 @@ public static class ObjectSelectOtigoSessionTracker
         }
 
         if (levelResults.Count == 0)
-        {
-            Debug.LogWarning("Hiç ObjectSelect level sonucu yok, final gönderilmiyor.");
             return;
-        }
 
         List<OtigoActivityResultSender.LevelResult> orderedResults = levelResults
             .OrderBy(x => x.Key)
@@ -157,8 +161,6 @@ public static class ObjectSelectOtigoSessionTracker
             );
         }
 
-        finalSent = true;
-
         OtigoActivityResultSender.Instance.SendActivityResult(
             activityId: activityId,
             durationSeconds: totalDurationSeconds,
@@ -168,6 +170,36 @@ public static class ObjectSelectOtigoSessionTracker
             levelPlayed: maxLevelPlayed,
             levelResults: orderedResults
         );
+    }
+
+    public static void SendFinalResultIfPossible()
+    {
+        if (!sessionStarted)
+        {
+            Debug.LogWarning("ObjectSelect session yok, final sonuç gönderilemez.");
+            return;
+        }
+
+        if (finalSent)
+        {
+            Debug.LogWarning("ObjectSelect final sonuç zaten gönderildi.");
+            return;
+        }
+
+        if (OtigoActivityResultSender.Instance == null)
+        {
+            Debug.LogError("OtigoActivityResultSender.Instance bulunamadı!");
+            return;
+        }
+
+        if (levelResults.Count == 0)
+        {
+            Debug.LogWarning("Hiç ObjectSelect level sonucu yok, final gönderilmiyor.");
+            return;
+        }
+
+        finalSent = true;
+        TryPostAggregateSnapshot();
     }
 
     public static void ResetSession()

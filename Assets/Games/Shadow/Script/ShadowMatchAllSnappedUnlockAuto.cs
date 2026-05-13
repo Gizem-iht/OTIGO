@@ -162,6 +162,7 @@ public class ShadowMatchAllSnappedUnlockAuto : MonoBehaviour
         if (levelController) levelController.RegisterRetry();
 
         string currentSceneName = SceneManager.GetActiveScene().name;
+        ShadowMatchLevelVariantRandomizer.MarkReloadShouldPreferDifferentVariant();
         SceneManager.LoadScene(currentSceneName);
     }
 

@@ -7,6 +7,8 @@ using System.Linq;
 
 public class CorrectImageGameLevelController : MonoBehaviour
 {
+    public static CorrectImageGameLevelController CurrentInstance { get; private set; }
+
     [Header("DATABASE")]
     public CorrectImageGameDatabase database;
 
@@ -153,6 +155,17 @@ public class CorrectImageGameLevelController : MonoBehaviour
         InitStarBar();
         UpdateStarBar();
         BuildLevel();
+    }
+
+    private void OnEnable()
+    {
+        CurrentInstance = this;
+    }
+
+    private void OnDisable()
+    {
+        if (CurrentInstance == this)
+            CurrentInstance = null;
     }
 
     private void Update()
@@ -439,6 +452,7 @@ public class CorrectImageGameLevelController : MonoBehaviour
     public void OnBackButton()
     {
         SaveLevelState();
+        FlushProgressSnapshot();
         SceneManager.LoadScene(categorySceneName);
     }
 
@@ -459,6 +473,8 @@ public class CorrectImageGameLevelController : MonoBehaviour
     public void NextLevel()
     {
         if (!levelFinished) return;
+
+        CloseParentModeBeforeNext();
 
         int playedLevelNumber = levelIndex + 1;
 
@@ -484,6 +500,10 @@ public class CorrectImageGameLevelController : MonoBehaviour
             helpCount = currentLevelHelpCount
         });
 
+        FlushProgressSnapshot();
+
+        OtigoHomeworkAssignment.NotifyDistinctLevelsCompleted(levelResults.Count);
+
         ClearLevelState();
 
         levelIndex++;
@@ -506,6 +526,34 @@ public class CorrectImageGameLevelController : MonoBehaviour
 
             BuildLevel();
         }
+    }
+    private void CloseParentModeBeforeNext()
+    {
+        if (ParentModeManager.Instance != null && ParentModeManager.Instance.IsParentModeActive)
+            ParentModeManager.Instance.CloseParentMode();
+    }
+
+    /// <summary>
+    /// Oyun tamamlanmadan çıkış / pause için mevcut level sonuçlarını backend'e gönderir (upsert).
+    /// </summary>
+    public void FlushProgressSnapshot()
+    {
+        if (resultSent || levelResults.Count == 0 || OtigoActivityResultSender.Instance == null)
+            return;
+
+        int durationSeconds = levelResults.Sum(l => l.durationSeconds);
+        int totalTargetCount = completedLevelCount;
+        int levelPlayedCount = levelResults.Count;
+
+        OtigoActivityResultSender.Instance.SendActivityResult(
+            activityId,
+            durationSeconds,
+            totalMistakesMade,
+            parentHelpCount,
+            totalTargetCount,
+            levelPlayedCount,
+            new List<OtigoActivityResultSender.LevelResult>(levelResults)
+        );
     }
 
     private void SendOtigoResult()

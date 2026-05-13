@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class OppositesLevelTracker : MonoBehaviour
 {
-    private const string LastLevelKey = "OppositesLastLevel";
+    private const string LastLevelKey = "Opposites_LastLevelSceneName";
 
     private void Start()
     {

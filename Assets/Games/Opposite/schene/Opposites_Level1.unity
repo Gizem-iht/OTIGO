@@ -868,7 +868,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &206122964
 GameObject:
@@ -1310,11 +1310,112 @@ MonoBehaviour:
   cards:
   - {fileID: 1256980195}
   - {fileID: 544581356}
+  randomizeOppositePairsFromPool: 1
+  oppositePairPool:
+  - sideOne:
+      conceptId: freezing
+      frontSprite: {fileID: 7759486771591675950, guid: 93d2c694132324a41a4a7138cd2d9db7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 5d45efcf507a94f4e8fdc36aed05514c, type: 3}
+    sideTwo:
+      conceptId: sweating
+      frontSprite: {fileID: 8410226487164384179, guid: 93d2c694132324a41a4a7138cd2d9db7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 1c846d0536967d5429cbac1d6c98bc9c, type: 3}
+  extraOppositePairPool:
+  - sideOne:
+      conceptId: big
+      frontSprite: {fileID: -6565401518411441310, guid: 66b52dae4e820a64c8d86b962055f2a7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: d7a973a41295f6f4c8ef701cb0b74550, type: 3}
+    sideTwo:
+      conceptId: small
+      frontSprite: {fileID: 1630653392621629274, guid: 66b52dae4e820a64c8d86b962055f2a7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 1fa046cdb14cd0c459afc46d19d2171c, type: 3}
+  - sideOne:
+      conceptId: happy
+      frontSprite: {fileID: 4419475404479845817, guid: 51dad99bc4c7b35468773960ab21061d, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 2b268e8a8079a86458deb1ad521f4b5c, type: 3}
+    sideTwo:
+      conceptId: sad
+      frontSprite: {fileID: 8548722193251483945, guid: 51dad99bc4c7b35468773960ab21061d, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: ed42dbb33c570cb47b9bf10e5e2db7eb, type: 3}
+  - sideOne:
+      conceptId: cold
+      frontSprite: {fileID: -6978237494756496457, guid: 6f483534730f94d47a8c756ca60bb8dd, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 4f44149af1c2f804583ab276417787f7, type: 3}
+    sideTwo:
+      conceptId: hot
+      frontSprite: {fileID: -8451979263732419078, guid: 6f483534730f94d47a8c756ca60bb8dd, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 9fa8fa88137881e4eb7c0c21a064bafa, type: 3}
+  - sideOne:
+      conceptId: 'fat '
+      frontSprite: {fileID: -8132761023490268940, guid: 9c953cfec21db0f47bb7d56a104f3a7e, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: f5cd238ffd8d64446a120ad18f674b2d, type: 3}
+    sideTwo:
+      conceptId: slim
+      frontSprite: {fileID: 3852709491143726070, guid: 9c953cfec21db0f47bb7d56a104f3a7e, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: c279b623f87305f49b15a8d3a1bc3399, type: 3}
+  - sideOne:
+      conceptId: "h\u0131zl\u0131"
+      frontSprite: {fileID: 2623603010465243331, guid: 01abe9805a94834479944b5dcd368810, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: d028b16f964a0894ea986c5bf47ac00a, type: 3}
+    sideTwo:
+      conceptId: yavas
+      frontSprite: {fileID: -1655534174114488150, guid: 01abe9805a94834479944b5dcd368810, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 26571005944ea8e44a8d212af8941f67, type: 3}
+  - sideOne:
+      conceptId: kirli
+      frontSprite: {fileID: 3792248791525474261, guid: a218b38f22fe72d498a30edc72118918, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: c7e5150812006a145a5b0017360d88e0, type: 3}
+    sideTwo:
+      conceptId: temiz
+      frontSprite: {fileID: -6586848275893841995, guid: a218b38f22fe72d498a30edc72118918, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 1635ecf5c619fe640aaba06f603ddb53, type: 3}
+  - sideOne:
+      conceptId: "\u0131slak"
+      frontSprite: {fileID: -8256057188995214242, guid: a218b38f22fe72d498a30edc72118918, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: b983048b5a47edf4d87c7a4e16785f74, type: 3}
+    sideTwo:
+      conceptId: kuru
+      frontSprite: {fileID: -2568756819721062415, guid: a218b38f22fe72d498a30edc72118918, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 00556e9a9e8dca649a64865d706be28a, type: 3}
+  - sideOne:
+      conceptId: bos
+      frontSprite: {fileID: -4894716585221611347, guid: 76273a2e650c1994fb5cdf5a9cd7ad7e, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 81bcfc1e6e5d64c4388a17331d2684b6, type: 3}
+    sideTwo:
+      conceptId: dolu
+      frontSprite: {fileID: -9042963775375503433, guid: 76273a2e650c1994fb5cdf5a9cd7ad7e, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 69469911d5b32f547a4006bb2d1893e1, type: 3}
+  - sideOne:
+      conceptId: yumusak
+      frontSprite: {fileID: 6685929958327174871, guid: 82ac9d03ea46b2c47933b4efcbda00a7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: d958f93fe8394b24db5e6712ae8ea315, type: 3}
+    sideTwo:
+      conceptId: sert
+      frontSprite: {fileID: -7690381613006819192, guid: 82ac9d03ea46b2c47933b4efcbda00a7, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 10f0d482bb9af874da3140ffb91544aa, type: 3}
+  - sideOne:
+      conceptId: mutlu
+      frontSprite: {fileID: 4419475404479845817, guid: 51dad99bc4c7b35468773960ab21061d, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 2b268e8a8079a86458deb1ad521f4b5c, type: 3}
+    sideTwo:
+      conceptId: mutsuz
+      frontSprite: {fileID: 8548722193251483945, guid: 51dad99bc4c7b35468773960ab21061d, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: ed42dbb33c570cb47b9bf10e5e2db7eb, type: 3}
+  - sideOne:
+      conceptId: "yak\u0131n"
+      frontSprite: {fileID: 4596168578409050479, guid: c04be9bad3c914e4c9cd3ca8ff7fca6b, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: 939792f141d91364fba7aed8eb2c0a77, type: 3}
+    sideTwo:
+      conceptId: uzak
+      frontSprite: {fileID: 2967470018398572211, guid: c04be9bad3c914e4c9cd3ca8ff7fca6b, type: 3}
+      cardVoiceClip: {fileID: 8300000, guid: ef31c7f12efa1aa468cea392f1e2af94, type: 3}
+  previewSeconds: 5
   replayButton: {fileID: 76062018}
   nextButton: {fileID: 1341537426}
   menuButton: {fileID: 552448306}
   volumeSlider: {fileID: 1008378234}
   sfxSource: {fileID: 292936315}
+  introClip: {fileID: 8300000, guid: d72f291760385af4480f0917ec7dc753, type: 3}
   startClip: {fileID: 8300000, guid: 5d470e5c7e16ef048b4135200cb9a69c, type: 3}
   correctClip: {fileID: 8300000, guid: 9af238e043a6b79438f2cf5465870c79, type: 3}
   wrongClip: {fileID: 8300000, guid: 04cf6e850e7a6d849b3d5e34ce95afc0, type: 3}

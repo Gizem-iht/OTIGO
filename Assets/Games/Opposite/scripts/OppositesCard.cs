@@ -89,4 +89,29 @@ public class OppositesCard : MonoBehaviour
         if (button != null)
             button.interactable = true;
     }
+
+    /// <summary>
+    /// Runtime assignment for random opposite deals. Keeps <see cref="cardId"/> and back art;
+    /// updates match identity and front face.
+    /// </summary>
+    public void AssignRuntimeOpposite(string newPairId, string newConceptId, Sprite newFront, AudioClip newVoice)
+    {
+        pairId = newPairId;
+        conceptId = newConceptId;
+        if (newFront != null)
+            frontSprite = newFront;
+        cardVoiceClip = newVoice;
+
+        if (IsMatched)
+        {
+            if (cardImage != null && frontSprite != null)
+                cardImage.sprite = frontSprite;
+            return;
+        }
+
+        if (IsOpen)
+            OpenCard();
+        else
+            CloseCard();
+    }
 }

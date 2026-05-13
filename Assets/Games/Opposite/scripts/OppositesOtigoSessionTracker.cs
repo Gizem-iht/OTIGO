@@ -54,6 +54,54 @@ public static class OppositesOtigoSessionTracker
         };
 
         levelResults[levelNumber] = result;
+
+        FlushAndSend();
+
+        OtigoHomeworkAssignment.NotifyDistinctLevelsCompleted(levelResults.Count);
+    }
+
+    public static bool HasUnflushedData()
+    {
+        return sessionStarted
+            && levelResults.Count > 0
+            && OtigoActivityResultSender.Instance != null;
+    }
+
+    public static void FlushAndSend()
+    {
+        TryPostAggregateSnapshot();
+    }
+
+    private static void TryPostAggregateSnapshot()
+    {
+        if (!sessionStarted)
+            return;
+
+        if (OtigoActivityResultSender.Instance == null)
+            return;
+
+        if (levelResults.Count == 0)
+            return;
+
+        List<OtigoActivityResultSender.LevelResult> orderedResults = levelResults
+            .OrderBy(x => x.Key)
+            .Select(x => x.Value)
+            .ToList();
+
+        int totalDurationSeconds = orderedResults.Sum(x => x.durationSeconds);
+        int totalMistakesMade = orderedResults.Sum(x => x.mistakesMade);
+        int totalTargetCount = orderedResults.Count;
+        int maxLevelPlayed = orderedResults.Max(x => x.levelNumber);
+
+        OtigoActivityResultSender.Instance.SendActivityResult(
+            activityId: activityId,
+            durationSeconds: totalDurationSeconds,
+            mistakesMade: totalMistakesMade,
+            parentHelpCount: totalParentHelpCount,
+            totalTargetCount: totalTargetCount,
+            levelPlayed: maxLevelPlayed,
+            levelResults: orderedResults
+        );
     }
 
     public static void AddParentHelpForLevel(int levelNumber)
@@ -74,27 +122,8 @@ public static class OppositesOtigoSessionTracker
         if (OtigoActivityResultSender.Instance == null) return;
         if (levelResults.Count == 0) return;
 
-        List<OtigoActivityResultSender.LevelResult> orderedResults = levelResults
-            .OrderBy(x => x.Key)
-            .Select(x => x.Value)
-            .ToList();
-
-        int totalDurationSeconds = orderedResults.Sum(x => x.durationSeconds);
-        int totalMistakesMade = orderedResults.Sum(x => x.mistakesMade);
-        int totalTargetCount = orderedResults.Count;
-        int maxLevelPlayed = orderedResults.Max(x => x.levelNumber);
-
         finalSent = true;
-
-        OtigoActivityResultSender.Instance.SendActivityResult(
-            activityId: activityId,
-            durationSeconds: totalDurationSeconds,
-            mistakesMade: totalMistakesMade,
-            parentHelpCount: totalParentHelpCount,
-            totalTargetCount: totalTargetCount,
-            levelPlayed: maxLevelPlayed,
-            levelResults: orderedResults
-        );
+        TryPostAggregateSnapshot();
     }
 
     public static void ResetSession()

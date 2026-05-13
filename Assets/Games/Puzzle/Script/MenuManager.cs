@@ -11,7 +11,7 @@ public class PuzzleMenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        string lastLevelName = PlayerPrefs.GetString(LastLevelKey, defaultLevelSceneName);
+        string lastLevelName = OtigoGameProgress.GetResumeScene(LastLevelKey, defaultLevelSceneName);
 
         if (!Application.CanStreamedLevelBeLoaded(lastLevelName))
         {
@@ -24,18 +24,24 @@ public class PuzzleMenuManager : MonoBehaviour
 
     public void ResetProgress()
     {
-        PlayerPrefs.DeleteKey(LastLevelKey);
-        PlayerPrefs.Save();
+        OtigoGameProgress.ClearGame("Puzzle");
         Debug.Log("[PuzzleMenuManager] Puzzle ilerlemesi sıfırlandı.");
     }
 
     public void ExitGame()
     {
         Debug.Log("[PuzzleMenuManager] Uygulamadan çıkılıyor...");
-        Application.Quit();
+
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

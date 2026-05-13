@@ -86,11 +86,33 @@ public class ShadowMatchLevelController : MonoBehaviour
 
     private string StatePrefix
     {
-        get { return "ShadowMatch_State_" + SceneManager.GetActiveScene().name + "_"; }
+        get
+        {
+            string scene = SceneManager.GetActiveScene().name;
+            string baseKey = "ShadowMatch_State_" + scene + "_";
+            if (ShadowMatchLevelVariantRandomizer.UsesVariantSaveSuffix)
+            {
+                return baseKey +
+                    "v" +
+                    ShadowMatchLevelVariantRandomizer.ActiveVariantIndex +
+                    "_";
+            }
+
+            return baseKey;
+        }
+    }
+
+    private static ShadowMatchDragSnap[] GetAllDragSnapPieces()
+    {
+        return Object.FindObjectsByType<ShadowMatchDragSnap>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None);
     }
 
     private void Awake()
     {
+        ShadowMatchSoundToggle.SyncAudioListenerFromPlayerPrefs();
+
         LoadPersistentRetry();
         LoadHistory();
         SaveLastPlayedLevelForMainMenu();
@@ -133,12 +155,19 @@ public class ShadowMatchLevelController : MonoBehaviour
         if (HasSavedState())
         {
             LoadState();
-            RestoreMatchedPieces();
 
             if (levelCompleted)
-                RestoreCompletedLevel();
-            else
+            {
+                ClearState();
+                ResetPiecesToStart();
+                ResetRuntimeState();
                 gameplayStarted = true;
+            }
+            else
+            {
+                RestoreMatchedPieces();
+                gameplayStarted = true;
+            }
         }
         else
         {
@@ -365,7 +394,8 @@ public class ShadowMatchLevelController : MonoBehaviour
         {
             foreach (Transform shadow in allShadows)
             {
-                if (shadow == null) continue;
+                if (shadow == null || !shadow.gameObject.activeInHierarchy)
+                    continue;
 
                 float distToShadow = Vector2.Distance(dropPosition, shadow.position);
 
@@ -401,11 +431,12 @@ public class ShadowMatchLevelController : MonoBehaviour
         if (levelCompleted)
             return;
 
-        ShadowMatchDragSnap[] allPieces = FindObjectsOfType<ShadowMatchDragSnap>();
-
-        foreach (ShadowMatchDragSnap piece in allPieces)
+        foreach (ShadowMatchDragSnap piece in GetAllDragSnapPieces())
         {
-            if (piece != null && !piece.IsLocked)
+            if (piece == null || !piece.gameObject.activeInHierarchy)
+                continue;
+
+            if (!piece.IsLocked)
                 return;
         }
 
@@ -436,6 +467,16 @@ public class ShadowMatchLevelController : MonoBehaviour
             confetti.Play();
     }
 
+    private void ResetRuntimeState()
+    {
+        correctMatches = 0;
+        wrongMatches = 0;
+        parentHelpCount = 0;
+        resultSaved = false;
+        levelCompleted = false;
+        activePlayTime = 0f;
+    }
+
     public void NextLevel()
     {
         if (!levelCompleted)
@@ -446,8 +487,10 @@ public class ShadowMatchLevelController : MonoBehaviour
 
         ClearState();
 
-        PlayerPrefs.SetString(LastLevelKey, nextLevelSceneName);
-        PlayerPrefs.Save();
+        if (isFinalLevel || OtigoGameProgress.IsFinalScene(nextLevelSceneName))
+            OtigoGameProgress.ClearKey(LastLevelKey);
+        else
+            OtigoGameProgress.SaveLevel(LastLevelKey, nextLevelSceneName);
 
         SceneManager.LoadScene(nextLevelSceneName);
     }
@@ -459,6 +502,7 @@ public class ShadowMatchLevelController : MonoBehaviour
 
         RegisterRetry(true);
         ClearState();
+        ShadowMatchLevelVariantRandomizer.MarkReloadShouldPreferDifferentVariant();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -481,11 +525,10 @@ public class ShadowMatchLevelController : MonoBehaviour
 
     private void RestoreMatchedPieces()
     {
-        ShadowMatchDragSnap[] allPieces = FindObjectsOfType<ShadowMatchDragSnap>();
-
-        foreach (ShadowMatchDragSnap piece in allPieces)
+        foreach (ShadowMatchDragSnap piece in GetAllDragSnapPieces())
         {
-            if (piece == null) continue;
+            if (piece == null || !piece.gameObject.activeInHierarchy)
+                continue;
 
             string id = piece.GetSaveId();
 
@@ -496,6 +539,17 @@ public class ShadowMatchLevelController : MonoBehaviour
                 piece.ForcePlaceToTarget();
             else
                 piece.ForceResetToStart();
+        }
+    }
+
+    private void ResetPiecesToStart()
+    {
+        foreach (ShadowMatchDragSnap piece in GetAllDragSnapPieces())
+        {
+            if (piece == null)
+                continue;
+
+            piece.ForceResetToStart();
         }
     }
 
@@ -536,11 +590,10 @@ public class ShadowMatchLevelController : MonoBehaviour
         PlayerPrefs.DeleteKey(StatePrefix + "ResultSaved");
         PlayerPrefs.DeleteKey(StatePrefix + "ActivePlayTime");
 
-        ShadowMatchDragSnap[] allPieces = FindObjectsOfType<ShadowMatchDragSnap>();
-
-        foreach (ShadowMatchDragSnap piece in allPieces)
+        foreach (ShadowMatchDragSnap piece in GetAllDragSnapPieces())
         {
-            if (piece == null) continue;
+            if (piece == null)
+                continue;
 
             PlayerPrefs.DeleteKey(StatePrefix + "Matched_" + piece.GetSaveId());
         }

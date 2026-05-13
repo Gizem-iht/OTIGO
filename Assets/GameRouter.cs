@@ -6,6 +6,8 @@ public class GameRouter : MonoBehaviour
 {
     void Start()
     {
+        Debug.Log("[GameRouter] BUILD VERSION 2026-05-10-A");
+
         string gameId        = GetStringFromIntent("gameId");
         string token         = GetStringFromIntent("token");
         string childIdStr    = GetStringFromIntent("childId");
@@ -14,7 +16,7 @@ public class GameRouter : MonoBehaviour
         Debug.Log("Gelen gameId: " + gameId);
         Debug.Log("Gelen token: " + (string.IsNullOrEmpty(token) ? "BOŞ!" : "VAR"));
         Debug.Log("Gelen childIdStr: " + (string.IsNullOrEmpty(childIdStr) ? "BOŞ!" : childIdStr));
-        Debug.Log("Gelen parentPattern: " + (string.IsNullOrEmpty(parentPattern) ? "YOK, default kullanılacak" : parentPattern));
+        Debug.Log("Gelen parentPattern: " + (string.IsNullOrEmpty(parentPattern) ? "YOK" : parentPattern));
 
         if (OtigoActivityResultSender.Instance == null)
         {
@@ -40,6 +42,9 @@ public class GameRouter : MonoBehaviour
 
     void ApplyAndRoute(string gameId, string token, string childIdStr, string parentPattern)
     {
+        if (string.IsNullOrEmpty(parentPattern))
+            parentPattern = "1,2,3,6,9";
+
         if (OtigoActivityResultSender.Instance != null)
         {
             if (!string.IsNullOrEmpty(token))
@@ -48,15 +53,19 @@ public class GameRouter : MonoBehaviour
             if (int.TryParse(childIdStr, out int childId) && childId > 0)
                 OtigoActivityResultSender.Instance.SetChildId(childId);
 
-            if (string.IsNullOrEmpty(parentPattern))
-                parentPattern = "1,2,3,6,9";
-
             OtigoActivityResultSender.Instance.SetParentPattern(parentPattern);
         }
 
-        // DEFAULT OYUN = COLORING
+        if (ParentPatternProvider.Instance != null)
+            ParentPatternProvider.Instance.SetPattern(parentPattern);
+
+        string homeworkAssignmentId = GetStringFromIntent("homeworkAssignmentId");
+        string homeworkRequiredLevels = GetStringFromIntent("homeworkRequiredLevels");
+        OtigoHomeworkAssignment.ConfigureFromLaunch(homeworkAssignmentId, homeworkRequiredLevels);
+
+        // DEFAULT OYUN = OPPOSITES
         if (string.IsNullOrEmpty(gameId))
-            gameId = "renk boyama";
+            gameId = "opposites";
 
         gameId = gameId.Trim().ToLowerInvariant();
 
@@ -64,45 +73,45 @@ public class GameRouter : MonoBehaviour
 
         switch (gameId)
         {
-            case "gölge-nesne eşleştirme":
+            case "shadow_object_matching":
                 SceneManager.LoadScene("ShadowMatch_MainMenu");
                 break;
 
-            case "farklı cisim bulma":
+            case "different_object":
                 SceneManager.LoadScene("ObjectSelect_MainMenu");
                 break;
 
-            case "doğru nesneyi seçme":
+            case "correct_object":
                 SceneManager.LoadScene("CorrectImage_Main");
                 break;
 
-            case "labirent takibi":
+            case "maze":
                 SceneManager.LoadScene("MazeMainMenu");
                 break;
 
-            case "renk boyama":
+            case "coloring":
                 SceneManager.LoadScene("Coloring_MainMenu");
                 break;
 
-            case "sayı-nesne eşleştirme":
+            case "number_object_matching":
                 SceneManager.LoadScene("numberobjectmatching_MainMenu");
                 break;
 
-            case "yapboz":
+            case "puzzle":
                 SceneManager.LoadScene("Puzzle_MainMenu");
                 break;
 
-            case "zıt kavramlar":
+            case "opposites":
                 SceneManager.LoadScene("Opposites_MainMenu");
                 break;
 
-            case "hikaye dinleyip soru cevaplama":
+            case "story_quiz":
                 SceneManager.LoadScene("StoryQuiz_MainMenu");
                 break;
 
             default:
                 Debug.LogWarning("[GameRouter] Bilinmeyen gameId/name: " + gameId + ". Varsayılan oyun açılıyor.");
-                SceneManager.LoadScene("Coloring_MainMenu");
+                SceneManager.LoadScene("Opposites_MainMenu");
                 break;
         }
     }
@@ -125,10 +134,14 @@ public class GameRouter : MonoBehaviour
             return "";
         }
 #else
-        if (key == "gameId")        return "Renk Boyama";
-        if (key == "token")         return "TEST_TOKEN";
+        // --- Editör (Play) sahte Intent: gerçek cihazda Android extra'ları kullanılır ---
+        // Ödev panelini denemek için aşağıda "2" bırakın; 2 level bitirince panel çıkar. Kapatmak için "" yazın.
+        if (key == "gameId")        return "opposites"; // Ödev panelini hızlı denemek için: "maze"
+        if (key == "token")         return "eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVkVMSSIsInN1YiI6ImxhcmFtaW5ha2FyYWRlbml6ekBnbWFpbC5jb20iLCJpYXQiOjE3Nzc4ODk2MzUsImV4cCI6MTc4MDQ4MTYzNX0.ay0mRm0Ive9kve-DG5WDTyPAs1ATaXaEBVmgRqM9KkbVF5M3Yp1Gc9pd3PV-ElawKh_eHuyXUHNJf-9iCyuDQg";
         if (key == "childId")       return "1";
         if (key == "parentPattern") return "1,2,3,6,9";
+        if (key == "homeworkAssignmentId") return "editor-test";
+        if (key == "homeworkRequiredLevels") return "2";
         return "";
 #endif
     }

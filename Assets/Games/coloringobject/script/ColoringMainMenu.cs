@@ -90,6 +90,15 @@ public class ColoringMainMenu : MonoBehaviour
 
     private void QuitGame()
     {
-        Application.Quit();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            },
+            1f);
     }
 }

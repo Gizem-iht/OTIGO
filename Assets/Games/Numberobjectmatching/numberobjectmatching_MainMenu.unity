@@ -1492,7 +1492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NumberObjectMatching_MainMenuManager
   startButton: {fileID: 665547217}
   quitButton: {fileID: 1768935693}
-  mainLevelSceneName: NumberObjectMatching_Level1
+  mainLevelSceneName: numberobjectmatching_Level1
 --- !u!1 &1883531213
 GameObject:
   m_ObjectHideFlags: 0

@@ -385,14 +385,11 @@ public class ColoringBaseController : MonoBehaviour
 
         int duration = Mathf.RoundToInt(activePlayTime);
 
-        if (ColoringSessionTracker.Instance != null)
-        {
-            ColoringSessionTracker.Instance.AddOrUpdateLevelResult(
-                levelNumber,
-                duration,
-                mistakesMade
-            );
-        }
+        ColoringSessionTracker.EnsureInstance().AddOrUpdateLevelResult(
+            levelNumber,
+            duration,
+            mistakesMade
+        );
 
         if (playSound && audioSource != null && finishClip != null)
             audioSource.PlayOneShot(finishClip);
@@ -440,13 +437,14 @@ public class ColoringBaseController : MonoBehaviour
     {
         if (isLastLevel)
         {
-            if (ColoringSessionTracker.Instance != null)
-                ColoringSessionTracker.Instance.SendFinalResult();
+            ColoringSessionTracker.EnsureInstance().SendFinalResult();
 
+            OtigoGameProgress.ClearKey(lastLevelKey);
             SceneManager.LoadScene(tebrikSceneName);
         }
         else
         {
+            OtigoGameProgress.SaveLevel(lastLevelKey, nextSceneName);
             SceneManager.LoadScene(nextSceneName);
         }
     }

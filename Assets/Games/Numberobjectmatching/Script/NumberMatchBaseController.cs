@@ -77,13 +77,14 @@ public class NumberMatchBaseController : MonoBehaviour
     {
         SaveCurrentLevel();
 
-        if (startNewSessionOnThisLevel && !HasSavedState())
+        if (startNewSessionOnThisLevel)
         {
             NumberObjectOtigoSessionTracker.BeginSession(activityId);
         }
         else if (!NumberObjectOtigoSessionTracker.HasSession())
         {
-            Debug.LogWarning("NUMBER OBJECT -> Session yok. İlk levelde startNewSessionOnThisLevel true olmalı.");
+            Debug.LogWarning("NUMBER OBJECT -> Session yok. Mevcut levelden yeni session baslatiliyor.");
+            NumberObjectOtigoSessionTracker.BeginSession(activityId);
         }
 
         finished = false;
@@ -431,6 +432,7 @@ public class NumberMatchBaseController : MonoBehaviour
     public void GoToNextLevel()
     {
         ClearState();
+        OtigoGameProgress.SaveNextOrClearForFinal(LAST_LEVEL_KEY, nextLevelSceneName, "");
         SceneManager.LoadScene(nextLevelSceneName);
     }
 

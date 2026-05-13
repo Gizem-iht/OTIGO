@@ -4,12 +4,25 @@ public class ParentPatternProvider : MonoBehaviour
 {
     public static ParentPatternProvider Instance { get; private set; }
 
-    [Header("Default Pattern")]
-    [SerializeField] private string defaultPattern = "1,2,3,6,9";
+    [Header("Editor Test Pattern")]
+    [SerializeField] private string editorTestPattern = "1,2,3,6,9";
 
     private string currentPattern;
 
-    public string CurrentPattern => string.IsNullOrEmpty(currentPattern) ? defaultPattern : currentPattern;
+    public string CurrentPattern
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(currentPattern))
+                return currentPattern;
+
+#if UNITY_EDITOR
+            return editorTestPattern;
+#else
+            return "";
+#endif
+        }
+    }
 
     private void Awake()
     {
@@ -25,9 +38,21 @@ public class ParentPatternProvider : MonoBehaviour
         }
     }
 
+    public void SetPattern(string pattern)
+    {
+        if (string.IsNullOrEmpty(pattern))
+        {
+            Debug.LogWarning("[ParentPatternProvider] Bos parentPattern geldi, mevcut deger korunuyor.");
+            return;
+        }
+
+        currentPattern = pattern;
+        Debug.Log("[ParentPatternProvider] parentPattern set edildi: " + currentPattern);
+    }
+
     private void ReadPatternFromAndroidIntent()
     {
-        currentPattern = defaultPattern;
+        currentPattern = "";
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         try
@@ -37,29 +62,31 @@ public class ParentPatternProvider : MonoBehaviour
                 AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
                 AndroidJavaObject intent = currentActivity.Call<AndroidJavaObject>("getIntent");
 
-                if (intent != null)
+                if (intent == null)
                 {
-                    string incomingPattern = intent.Call<string>("getStringExtra", "parentPattern");
+                    Debug.LogWarning("[ParentPatternProvider] Android intent bulunamadi.");
+                    return;
+                }
 
-                    if (!string.IsNullOrEmpty(incomingPattern))
-                    {
-                        currentPattern = incomingPattern;
-                        Debug.Log("Android intent üzerinden gelen parent pattern: " + currentPattern);
-                    }
-                    else
-                    {
-                        Debug.Log("Intent'te parentPattern yok. Varsayılan kullanılacak: " + defaultPattern);
-                    }
+                string incomingPattern = intent.Call<string>("getStringExtra", "parentPattern");
+
+                if (!string.IsNullOrEmpty(incomingPattern))
+                {
+                    SetPattern(incomingPattern);
+                }
+                else
+                {
+                    Debug.LogWarning("[ParentPatternProvider] parentPattern intent extra gelmedi. Frontend kayitta belirlenen deseni gondermeli.");
                 }
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("Pattern Android intent'ten alınamadı. Varsayılan kullanılacak. Hata: " + e.Message);
-            currentPattern = defaultPattern;
+            Debug.LogWarning("[ParentPatternProvider] parentPattern Android intent'ten alinamadi. Hata: " + e.Message);
+            currentPattern = "";
         }
 #else
-        Debug.Log("Editor modunda varsayılan pattern kullanılıyor: " + currentPattern);
+        Debug.Log("[ParentPatternProvider] Editor test pattern kullanilacak: " + CurrentPattern);
 #endif
     }
 }

@@ -29,24 +29,21 @@ public class MainMenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        string lastSceneName = PlayerPrefs.GetString(LAST_LEVEL_KEY, "");
-
-        if (!string.IsNullOrEmpty(lastSceneName) && Application.CanStreamedLevelBeLoaded(lastSceneName))
-        {
-            SceneManager.LoadScene(lastSceneName);
-        }
-        else
-        {
-            SceneManager.LoadScene(mainLevelSceneName);
-        }
+        SceneManager.LoadScene(OtigoGameProgress.GetResumeScene(LAST_LEVEL_KEY, mainLevelSceneName));
     }
 
     public void QuitGame()
     {
-        Application.Quit();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

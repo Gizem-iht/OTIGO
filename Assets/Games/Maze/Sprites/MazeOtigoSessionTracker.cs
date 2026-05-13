@@ -61,6 +61,76 @@ public static class MazeOtigoSessionTracker
                   ", durationSeconds: " + durationSeconds +
                   ", mistakesMade: " + mistakesMade +
                   ", helpCount: " + helpCount);
+
+        FlushAndSend();
+
+        OtigoHomeworkAssignment.NotifyDistinctLevelsCompleted(levelResults.Count);
+    }
+
+    public static bool HasUnflushedData()
+    {
+        return sessionStarted
+            && levelResults.Count > 0
+            && OtigoActivityResultSender.Instance != null;
+    }
+
+    public static void FlushAndSend()
+    {
+        TryPostAggregateSnapshot();
+    }
+
+    private static void TryPostAggregateSnapshot()
+    {
+        if (!sessionStarted)
+            return;
+
+        if (OtigoActivityResultSender.Instance == null)
+        {
+            Debug.LogError("OtigoActivityResultSender.Instance bulunamadı!");
+            return;
+        }
+
+        if (levelResults.Count == 0)
+            return;
+
+        List<OtigoActivityResultSender.LevelResult> orderedResults = levelResults
+            .OrderBy(x => x.Key)
+            .Select(x => x.Value)
+            .ToList();
+
+        int totalDurationSeconds = orderedResults.Sum(x => x.durationSeconds);
+        int totalMistakesMade = orderedResults.Sum(x => x.mistakesMade);
+        int totalTargetCount = orderedResults.Count;
+        int maxLevelPlayed = orderedResults.Max(x => x.levelNumber);
+
+        Debug.Log("Maze final result hazırlanıyor...");
+        Debug.Log("activityId: " + activityId);
+        Debug.Log("durationSeconds: " + totalDurationSeconds);
+        Debug.Log("mistakesMade: " + totalMistakesMade);
+        Debug.Log("parentHelpCount: " + totalParentHelpCount);
+        Debug.Log("totalTargetCount: " + totalTargetCount);
+        Debug.Log("levelPlayed: " + maxLevelPlayed);
+
+        for (int i = 0; i < orderedResults.Count; i++)
+        {
+            Debug.Log(
+                "levelResults[" + i + "] => " +
+                "levelNumber: " + orderedResults[i].levelNumber +
+                ", durationSeconds: " + orderedResults[i].durationSeconds +
+                ", mistakesMade: " + orderedResults[i].mistakesMade +
+                ", helpCount: " + orderedResults[i].helpCount
+            );
+        }
+
+        OtigoActivityResultSender.Instance.SendActivityResult(
+            activityId: activityId,
+            durationSeconds: totalDurationSeconds,
+            mistakesMade: totalMistakesMade,
+            parentHelpCount: totalParentHelpCount,
+            totalTargetCount: totalTargetCount,
+            levelPlayed: maxLevelPlayed,
+            levelResults: orderedResults
+        );
     }
 
     public static void AddParentHelp()
@@ -121,46 +191,8 @@ public static class MazeOtigoSessionTracker
             return;
         }
 
-        List<OtigoActivityResultSender.LevelResult> orderedResults = levelResults
-            .OrderBy(x => x.Key)
-            .Select(x => x.Value)
-            .ToList();
-
-        int totalDurationSeconds = orderedResults.Sum(x => x.durationSeconds);
-        int totalMistakesMade = orderedResults.Sum(x => x.mistakesMade);
-        int totalTargetCount = orderedResults.Count;
-        int maxLevelPlayed = orderedResults.Max(x => x.levelNumber);
-
-        Debug.Log("Maze final result hazırlanıyor...");
-        Debug.Log("activityId: " + activityId);
-        Debug.Log("durationSeconds: " + totalDurationSeconds);
-        Debug.Log("mistakesMade: " + totalMistakesMade);
-        Debug.Log("parentHelpCount: " + totalParentHelpCount);
-        Debug.Log("totalTargetCount: " + totalTargetCount);
-        Debug.Log("levelPlayed: " + maxLevelPlayed);
-
-        for (int i = 0; i < orderedResults.Count; i++)
-        {
-            Debug.Log(
-                "levelResults[" + i + "] => " +
-                "levelNumber: " + orderedResults[i].levelNumber +
-                ", durationSeconds: " + orderedResults[i].durationSeconds +
-                ", mistakesMade: " + orderedResults[i].mistakesMade +
-                ", helpCount: " + orderedResults[i].helpCount
-            );
-        }
-
         finalSent = true;
-
-        OtigoActivityResultSender.Instance.SendActivityResult(
-            activityId: activityId,
-            durationSeconds: totalDurationSeconds,
-            mistakesMade: totalMistakesMade,
-            parentHelpCount: totalParentHelpCount,
-            totalTargetCount: totalTargetCount,
-            levelPlayed: maxLevelPlayed,
-            levelResults: orderedResults
-        );
+        TryPostAggregateSnapshot();
     }
 
     public static void ResetSession()

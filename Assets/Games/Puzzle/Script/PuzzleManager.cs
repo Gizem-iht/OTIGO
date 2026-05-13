@@ -7,6 +7,12 @@ using System.IO;
 
 public class PuzzleGameManager : MonoBehaviour
 {
+    public const string VolumePrefsKey = "Puzzle_GameVolume";
+    private const string LastNonZeroVolumeKey = "Puzzle_LastNonZeroVol";
+
+    /// <summary>Kayıtlı tercih yokken (ilk açılış) kullanılan varsayılan — slider ortası.</summary>
+    public const float DefaultVolumeLevel = 0.5f;
+
     [System.Serializable]
     public class PuzzleAttempt
     {
@@ -44,6 +50,7 @@ public class PuzzleGameManager : MonoBehaviour
     public string tebrikSceneName = "Puzzle_TebrikScene";
 
     [Header("Ses")]
+    public Slider volumeSlider;
     public Button soundButton;
     public Sprite soundOnIcon;
     public Sprite soundOffIcon;
@@ -87,6 +94,34 @@ public class PuzzleGameManager : MonoBehaviour
 
     private const string LastLevelKey = "Puzzle_LastLevelName";
 
+    /// <summary>
+    /// Ana menü veya level; PlayerPrefs'teki Puzzle ses seviyesini dinleyiciye uygular.
+    /// </summary>
+    public static void SyncAudioListenerFromPlayerPrefs()
+    {
+        float v;
+        if (!PlayerPrefs.HasKey(VolumePrefsKey))
+        {
+            v = DefaultVolumeLevel;
+            PlayerPrefs.SetFloat(VolumePrefsKey, v);
+            PlayerPrefs.Save();
+        }
+        else
+            v = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumePrefsKey));
+
+        AudioListener.volume = v;
+    }
+
+    public static void ApplyAndPersistGlobalVolume(float value)
+    {
+        float c = Mathf.Clamp01(value);
+        AudioListener.volume = c;
+        PlayerPrefs.SetFloat(VolumePrefsKey, c);
+        PlayerPrefs.Save();
+        if (c > 0.01f)
+            PlayerPrefs.SetFloat(LastNonZeroVolumeKey, c);
+    }
+
     private string StatePrefix
     {
         get { return "Puzzle_State_" + SceneManager.GetActiveScene().name + "_"; }
@@ -111,6 +146,14 @@ public class PuzzleGameManager : MonoBehaviour
 
         managerAudioSource.playOnAwake = false;
         managerAudioSource.loop = false;
+
+        SyncAudioListenerFromPlayerPrefs();
+    }
+
+    private void OnDestroy()
+    {
+        if (volumeSlider != null)
+            volumeSlider.onValueChanged.RemoveListener(OnVolumeSliderChanged);
     }
 
     private void Start()
@@ -130,6 +173,7 @@ public class PuzzleGameManager : MonoBehaviour
             confettiEffect.gameObject.SetActive(false);
         }
 
+        SetupVolumeSlider();
         SetupSoundButton();
 
         inspectorRetries = PlayerPrefs.GetInt(RetryKey(), 0);
@@ -188,6 +232,31 @@ public class PuzzleGameManager : MonoBehaviour
     private bool IsInstructionAudioPlaying()
     {
         return managerAudioSource != null && managerAudioSource.isPlaying;
+    }
+
+    private void SetupVolumeSlider()
+    {
+        if (volumeSlider == null)
+            return;
+
+        volumeSlider.minValue = 0f;
+        volumeSlider.maxValue = 1f;
+        volumeSlider.wholeNumbers = false;
+
+        float saved =
+            Mathf.Clamp01(PlayerPrefs.GetFloat(VolumePrefsKey, DefaultVolumeLevel));
+
+        volumeSlider.onValueChanged.RemoveListener(OnVolumeSliderChanged);
+        volumeSlider.SetValueWithoutNotify(saved);
+        SyncAudioListenerFromPlayerPrefs();
+        volumeSlider.onValueChanged.AddListener(OnVolumeSliderChanged);
+    }
+
+    private void OnVolumeSliderChanged(float value)
+    {
+        ApplyAndPersistGlobalVolume(value);
+        isSoundOn = AudioListener.volume > 0.0001f;
+        UpdateSoundButtonVisual();
     }
 
     private void SetupSoundButton()
@@ -446,21 +515,18 @@ public class PuzzleGameManager : MonoBehaviour
 
             if (string.IsNullOrEmpty(nextSceneName))
             {
-                PlayerPrefs.DeleteKey(LastLevelKey);
-                PlayerPrefs.Save();
+                OtigoGameProgress.ClearKey(LastLevelKey);
                 SceneManager.LoadScene(tebrikSceneName);
                 return;
             }
 
-            PlayerPrefs.SetString(LastLevelKey, nextSceneName);
-            PlayerPrefs.Save();
+            OtigoGameProgress.SaveNextOrClearForFinal(LastLevelKey, nextSceneName, tebrikSceneName);
 
             SceneManager.LoadScene(nextSceneName);
         }
         else
         {
-            PlayerPrefs.DeleteKey(LastLevelKey);
-            PlayerPrefs.Save();
+            OtigoGameProgress.ClearKey(LastLevelKey);
             SceneManager.LoadScene(tebrikSceneName);
         }
     }
@@ -481,8 +547,41 @@ public class PuzzleGameManager : MonoBehaviour
 
     public void ToggleSound()
     {
-        isSoundOn = !isSoundOn;
-        AudioListener.volume = isSoundOn ? 1f : 0f;
+        if (volumeSlider != null)
+        {
+            float current = Mathf.Clamp01(AudioListener.volume);
+            float next;
+
+            if (current > 0.01f)
+            {
+                PlayerPrefs.SetFloat(LastNonZeroVolumeKey, current);
+                next = 0f;
+            }
+            else
+            {
+                float restore =
+                    Mathf.Clamp01(
+                        PlayerPrefs.GetFloat(LastNonZeroVolumeKey, DefaultVolumeLevel));
+                if (restore < 0.05f)
+                    restore = DefaultVolumeLevel;
+                next = restore;
+            }
+
+            ApplyAndPersistGlobalVolume(next);
+
+            volumeSlider.onValueChanged.RemoveListener(OnVolumeSliderChanged);
+            volumeSlider.SetValueWithoutNotify(next);
+            volumeSlider.onValueChanged.AddListener(OnVolumeSliderChanged);
+
+            isSoundOn = next > 0.0001f;
+        }
+        else
+        {
+            isSoundOn = !isSoundOn;
+            float next = isSoundOn ? 1f : 0f;
+            ApplyAndPersistGlobalVolume(next);
+        }
+
         UpdateSoundButtonVisual();
     }
 

@@ -20,15 +20,20 @@ public class StoryQuizTebrikManager : MonoBehaviour
 
     public void ExitGame()
     {
-        PlayerPrefs.DeleteKey(lastLevelKey);
-        PlayerPrefs.Save();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                OtigoGameProgress.ClearGame("StoryQuiz");
 
-        StoryQuizOtigoSessionTracker.ResetSession();
+                StoryQuizOtigoSessionTracker.ResetSession();
 
-        Application.Quit();
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

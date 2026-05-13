@@ -4,12 +4,20 @@ public class ObjectSelect_ExitGameButton : MonoBehaviour
 {
     public void ExitGame()
     {
-        Debug.Log("Oyun kapatılıyor...");
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                OtigoGameProgress.ClearGame("ObjectSelect");
 
-        Application.Quit();
+                Debug.Log("Oyun kapatılıyor...");
+
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

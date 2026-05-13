@@ -434,11 +434,19 @@ public class GameManager_SelectItems : MonoBehaviour
 
         ClearState();
 
+        if (isFinalLevel)
+        {
+            OtigoGameProgress.ClearKey(LAST_LEVEL_KEY);
+            SceneManager.LoadScene(congratsSceneName);
+            return;
+        }
+
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
 
         if (nextIndex >= SceneManager.sceneCountInBuildSettings)
         {
+            OtigoGameProgress.ClearKey(LAST_LEVEL_KEY);
             SceneManager.LoadScene(congratsSceneName);
         }
         else
@@ -446,8 +454,7 @@ public class GameManager_SelectItems : MonoBehaviour
             string nextScenePath = SceneUtility.GetScenePathByBuildIndex(nextIndex);
             string nextSceneName = System.IO.Path.GetFileNameWithoutExtension(nextScenePath);
 
-            PlayerPrefs.SetString(LAST_LEVEL_KEY, nextSceneName);
-            PlayerPrefs.Save();
+            OtigoGameProgress.SaveNextOrClearForFinal(LAST_LEVEL_KEY, nextSceneName, congratsSceneName);
 
             SceneManager.LoadScene(nextIndex);
         }

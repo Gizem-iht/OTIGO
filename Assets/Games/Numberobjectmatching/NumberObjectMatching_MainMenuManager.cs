@@ -8,7 +8,7 @@ public class NumberObjectMatching_MainMenuManager : MonoBehaviour
     public Button quitButton;
 
     [Header("Scene Names")]
-    public string mainLevelSceneName = "NumberObjectMatching_Level1";
+    public string mainLevelSceneName = "numberobjectmatching_Level1";
 
     private const string LAST_LEVEL_KEY = "NumberObjectMatching_LastLevelSceneName";
 
@@ -29,24 +29,21 @@ public class NumberObjectMatching_MainMenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        string lastSceneName = PlayerPrefs.GetString(LAST_LEVEL_KEY, "");
-
-        if (!string.IsNullOrEmpty(lastSceneName) && Application.CanStreamedLevelBeLoaded(lastSceneName))
-        {
-            SceneManager.LoadScene(lastSceneName);
-        }
-        else
-        {
-            SceneManager.LoadScene(mainLevelSceneName);
-        }
+        SceneManager.LoadScene(OtigoGameProgress.GetResumeScene(LAST_LEVEL_KEY, mainLevelSceneName));
     }
 
     public void QuitGame()
     {
-        Application.Quit();
+        OtigoActivityResultSender.RequestQuitWithFlush(
+            OtigoSessionLifecycleCoordinator.FlushAllActiveGameSessions,
+            () =>
+            {
+                Application.Quit();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #endif
+            },
+            1f);
     }
 }

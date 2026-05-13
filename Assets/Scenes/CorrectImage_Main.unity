@@ -153,9 +153,9 @@ RectTransform:
   - {fileID: 615234545}
   m_Father: {fileID: 2032900457}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: -340}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 300, y: 200}
   m_SizeDelta: {x: 500, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &32439987
@@ -712,6 +712,7 @@ MonoBehaviour:
   startButton: {fileID: 32439987}
   quitButton: {fileID: 1299897598}
   categorySelectSceneName: CorrectImage_CategorySelect
+  gameLevelSceneName: CorrectImage_CorrectImage_GameLevel
 --- !u!4 &1079657285
 Transform:
   m_ObjectHideFlags: 0

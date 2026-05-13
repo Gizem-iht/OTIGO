@@ -1,8 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+[Serializable]
+public class OppositeFaceConfig
+{
+    public string conceptId;
+    public Sprite frontSprite;
+    public AudioClip cardVoiceClip;
+}
+
+[Serializable]
+public class OppositePairConfig
+{
+    public OppositeFaceConfig sideOne;
+    public OppositeFaceConfig sideTwo;
+}
 
 public class OppositesMemoryLevelManager : MonoBehaviour
 {
@@ -19,6 +35,14 @@ public class OppositesMemoryLevelManager : MonoBehaviour
 
     [Header("Cards")]
     public List<OppositesCard> cards = new List<OppositesCard>();
+
+    [Header("Random opposite deal")]
+    public bool randomizeOppositePairsFromPool = true;
+    [Tooltip("Boşsa oyun kartlardan otomatik doldurur. OTIGO → Opposites menüsünden Inspector’a yazabilirsin.")]
+    public List<OppositePairConfig> oppositePairPool = new List<OppositePairConfig>();
+
+    [Tooltip("Buna daha fazla zıt çift ekle: havuz slot sayısından BÜYÜK olursa her restart’ta farklı çiftler seçilir. Sadece board’daki çift sayısı kadar havuz varsa yalnızca yer değişir (aynı görseller).")]
+    public List<OppositePairConfig> extraOppositePairPool = new List<OppositePairConfig>();
 
     [Header("Preview")]
     public float previewSeconds = 5f;
@@ -54,6 +78,8 @@ public class OppositesMemoryLevelManager : MonoBehaviour
 
     private float activePlayTime = 0f;
 
+    private List<List<OppositesCard>> cachedPairSlots;
+
     private string StatePrefix
     {
         get { return "Opposites_State_" + SceneManager.GetActiveScene().name + "_"; }
@@ -62,6 +88,8 @@ public class OppositesMemoryLevelManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        CachePairSlotsFromInspector();
+        EnsureOppositePairPoolFromInspectorsIfNeeded();
     }
 
     private void Start()
@@ -96,8 +124,16 @@ public class OppositesMemoryLevelManager : MonoBehaviour
     {
         yield return null;
 
-        if (HasSavedState())
+        bool reopenedAfterRestartTap = TryConsumeFreshRestartDeal();
+
+        if (HasSavedState() && !reopenedAfterRestartTap)
         {
+            if (ShouldApplySavedDeal())
+            {
+                int seed = PlayerPrefs.GetInt(StatePrefix + "DealSeed");
+                ApplyRandomDealFromPool(seed);
+            }
+
             LoadState();
             RestoreMatchedCards();
 
@@ -108,6 +144,14 @@ public class OppositesMemoryLevelManager : MonoBehaviour
         }
         else
         {
+            if (CanApplyRandomDealFromPool())
+            {
+                int seed = MakeNewDealSeed();
+                PlayerPrefs.SetInt(StatePrefix + "DealSeed", seed);
+                PlayerPrefs.Save();
+                ApplyRandomDealFromPool(seed);
+            }
+
             StartCoroutine(IntroThenPreviewRoutine());
         }
     }
@@ -373,6 +417,8 @@ public class OppositesMemoryLevelManager : MonoBehaviour
     public void RestartLevel()
     {
         ClearState();
+        PlayerPrefs.SetInt(StatePrefix + "FreshRestart", 1);
+        PlayerPrefs.Save();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -382,14 +428,12 @@ public class OppositesMemoryLevelManager : MonoBehaviour
 
         if (isLastLevel)
         {
-            PlayerPrefs.DeleteKey(LAST_LEVEL_KEY);
-            PlayerPrefs.Save();
+            OtigoGameProgress.ClearGame("Opposites");
             SceneManager.LoadScene("Opposites_TebrikScene");
         }
         else if (!string.IsNullOrEmpty(nextSceneName))
         {
-            PlayerPrefs.SetString(LAST_LEVEL_KEY, nextSceneName);
-            PlayerPrefs.Save();
+            OtigoGameProgress.SaveLevel(LAST_LEVEL_KEY, nextSceneName);
             SceneManager.LoadScene(nextSceneName);
         }
     }
@@ -467,6 +511,28 @@ public class OppositesMemoryLevelManager : MonoBehaviour
         return PlayerPrefs.GetInt(StatePrefix + "HasState", 0) == 1;
     }
 
+    /// <returns>Replay/Re-temiz kart dağılım bayrağı tüketildiyse true (yeniden sahne yüklendi).</returns>
+    private bool TryConsumeFreshRestartDeal()
+    {
+        if (PlayerPrefs.GetInt(StatePrefix + "FreshRestart", 0) != 1)
+            return false;
+
+        PlayerPrefs.DeleteKey(StatePrefix + "FreshRestart");
+        ClearState();
+        PlayerPrefs.Save();
+        return true;
+    }
+
+    private static int MakeNewDealSeed()
+    {
+        unchecked
+        {
+            return Guid.NewGuid().GetHashCode() ^
+                   Environment.TickCount ^
+                   UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        }
+    }
+
     private void ClearState()
     {
         PlayerPrefs.DeleteKey(StatePrefix + "HasState");
@@ -475,6 +541,7 @@ public class OppositesMemoryLevelManager : MonoBehaviour
         PlayerPrefs.DeleteKey(StatePrefix + "LevelCompleted");
         PlayerPrefs.DeleteKey(StatePrefix + "ResultSaved");
         PlayerPrefs.DeleteKey(StatePrefix + "ActivePlayTime");
+        PlayerPrefs.DeleteKey(StatePrefix + "DealSeed");
 
         foreach (OppositesCard card in cards)
         {
@@ -485,5 +552,195 @@ public class OppositesMemoryLevelManager : MonoBehaviour
         }
 
         PlayerPrefs.Save();
+    }
+
+    private void CachePairSlotsFromInspector()
+    {
+        cachedPairSlots = new List<List<OppositesCard>>();
+        var pairIdFirstIndex = new Dictionary<string, int>();
+
+        foreach (OppositesCard card in cards)
+        {
+            if (card == null) continue;
+            string pid = card.pairId;
+            if (string.IsNullOrEmpty(pid))
+            {
+                Debug.LogError("[Opposites] Card without pairId in list: " + card.name, card);
+                continue;
+            }
+
+            if (!pairIdFirstIndex.ContainsKey(pid))
+            {
+                pairIdFirstIndex[pid] = cachedPairSlots.Count;
+                cachedPairSlots.Add(new List<OppositesCard>());
+            }
+
+            int slot = pairIdFirstIndex[pid];
+            cachedPairSlots[slot].Add(card);
+        }
+
+        for (int i = 0; i < cachedPairSlots.Count; i++)
+        {
+            if (cachedPairSlots[i].Count != 2)
+            {
+                Debug.LogError(
+                    "[Opposites] Pair slot " + i + " must have exactly 2 cards (pairId group). Count=" +
+                    cachedPairSlots[i].Count);
+            }
+        }
+    }
+
+    private List<OppositePairConfig> GetEffectiveOppositePool()
+    {
+        var list = new List<OppositePairConfig>();
+        if (oppositePairPool != null && oppositePairPool.Count > 0)
+            list.AddRange(oppositePairPool);
+        if (extraOppositePairPool != null && extraOppositePairPool.Count > 0)
+            list.AddRange(extraOppositePairPool);
+        return list;
+    }
+
+    private bool CanApplyRandomDealFromPool()
+    {
+        if (!randomizeOppositePairsFromPool)
+            return false;
+        int slots = PairSlotCountSafe();
+        List<OppositePairConfig> pool = GetEffectiveOppositePool();
+        return slots > 0 && pool.Count >= slots;
+    }
+
+    private bool ShouldApplySavedDeal()
+    {
+        return CanApplyRandomDealFromPool() && PlayerPrefs.HasKey(StatePrefix + "DealSeed");
+    }
+
+    private int PairSlotCountSafe()
+    {
+        return cachedPairSlots != null ? cachedPairSlots.Count : 0;
+    }
+
+    private void ApplyRandomDealFromPool(int seed)
+    {
+        int n = PairSlotCountSafe();
+        List<OppositePairConfig> deck = GetEffectiveOppositePool();
+        if (deck == null || deck.Count < n || n <= 0)
+            return;
+
+        System.Random rng = new System.Random(seed);
+
+        List<int> poolPick = new List<int>(deck.Count);
+        for (int i = 0; i < deck.Count; i++)
+            poolPick.Add(i);
+
+        ShuffleList(poolPick, rng);
+
+        List<int> slotOrder = new List<int>(n);
+        for (int i = 0; i < n; i++)
+            slotOrder.Add(i);
+
+        ShuffleList(slotOrder, rng);
+
+        for (int i = 0; i < n; i++)
+        {
+            int poolIdx = poolPick[i];
+            int slotIdx = slotOrder[i];
+            OppositePairConfig cfg = deck[poolIdx];
+            if (cfg.sideOne == null || cfg.sideTwo == null)
+            {
+                Debug.LogError("[Opposites] Pool entry " + poolIdx + " missing sideOne/sideTwo.");
+                continue;
+            }
+
+            OppositeFaceConfig a = cfg.sideOne;
+            OppositeFaceConfig b = cfg.sideTwo;
+            if (rng.Next(2) == 1)
+            {
+                OppositeFaceConfig t = a;
+                a = b;
+                b = t;
+            }
+
+            List<OppositesCard> slot = cachedPairSlots[slotIdx];
+            if (slot == null || slot.Count != 2)
+                continue;
+
+            OppositesCard c0 = slot[0];
+            OppositesCard c1 = slot[1];
+            if (rng.Next(2) == 1)
+            {
+                OppositesCard t = c0;
+                c0 = c1;
+                c1 = t;
+            }
+
+            string runtimePairId = "deal_" + seed + "_" + slotIdx;
+            c0.AssignRuntimeOpposite(runtimePairId, a.conceptId, a.frontSprite, a.cardVoiceClip);
+            c1.AssignRuntimeOpposite(runtimePairId, b.conceptId, b.frontSprite, b.cardVoiceClip);
+        }
+    }
+
+    private static void ShuffleList<T>(IList<T> list, System.Random rng)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            T tmp = list[i];
+            list[i] = list[j];
+            list[j] = tmp;
+        }
+    }
+
+    private void EnsureOppositePairPoolFromInspectorsIfNeeded()
+    {
+        if (!randomizeOppositePairsFromPool)
+            return;
+
+        if (oppositePairPool != null && oppositePairPool.Count > 0)
+            return;
+
+        oppositePairPool = BuildPairPoolConfigsFromCachedSlots();
+    }
+
+    /// <summary>
+    /// Kart listesinden çift havuzunu üretir (Editor menüsünde ve araç için).
+    /// </summary>
+    public void RebuildOppositePairPoolFromInspectors()
+    {
+        CachePairSlotsFromInspector();
+        oppositePairPool = BuildPairPoolConfigsFromCachedSlots();
+    }
+
+    private List<OppositePairConfig> BuildPairPoolConfigsFromCachedSlots()
+    {
+        var pool = new List<OppositePairConfig>();
+        if (cachedPairSlots == null)
+            return pool;
+
+        foreach (List<OppositesCard> slot in cachedPairSlots)
+        {
+            if (slot == null || slot.Count != 2)
+                continue;
+
+            pool.Add(new OppositePairConfig
+            {
+                sideOne = FaceConfigFromCard(slot[0]),
+                sideTwo = FaceConfigFromCard(slot[1])
+            });
+        }
+
+        return pool;
+    }
+
+    private static OppositeFaceConfig FaceConfigFromCard(OppositesCard c)
+    {
+        if (c == null)
+            return new OppositeFaceConfig();
+
+        return new OppositeFaceConfig
+        {
+            conceptId = c.conceptId,
+            frontSprite = c.frontSprite,
+            cardVoiceClip = c.cardVoiceClip
+        };
     }
 }
